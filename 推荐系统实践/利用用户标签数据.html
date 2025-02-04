@@ -1,0 +1,271 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>利用用户标签数据 - Mdbook Template</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Mdbook Template</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="利用用户标签数据"><a class="header" href="#利用用户标签数据">利用用户标签数据</a></h1>
+<ul>
+<li><a href="#ugc%E6%A0%87%E7%AD%BE%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BB%A3%E8%A1%A8%E5%BA%94%E7%94%A8">UGC标签系统的代表应用</a></li>
+<li><a href="#%E6%A0%87%E7%AD%BE%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E6%8E%A8%E8%8D%90%E9%97%AE%E9%A2%98">标签系统中的推荐问题</a>
+<ul>
+<li><a href="#%E7%94%A8%E6%88%B7%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%9B%E8%A1%8C%E6%A0%87%E6%B3%A8">用户为什么进行标注</a></li>
+<li><a href="#%E7%94%A8%E6%88%B7%E5%A6%82%E4%BD%95%E6%89%93%E6%A0%87%E7%AD%BE">用户如何打标签</a></li>
+<li><a href="#%E7%94%A8%E6%88%B7%E6%89%93%E4%BB%80%E4%B9%88%E6%A0%B7%E7%9A%84%E6%A0%87%E7%AD%BE">用户打什么样的标签</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E6%A0%87%E7%AD%BE%E7%9A%84%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F">基于标签的推荐系统</a></li>
+<li><a href="#%E7%BB%99%E7%94%A8%E6%88%B7%E6%8E%A8%E8%8D%90%E6%A0%87%E7%AD%BE">给用户推荐标签</a></li>
+<li><a href="#%E6%89%A9%E5%B1%95%E9%98%85%E8%AF%BB">扩展阅读</a></li>
+</ul>
+<p>推荐系统的目的是联系用户的兴趣和物品，这种联系需要依赖不同的媒介。GroupLens在一篇文章中表示目前流行的推荐系统基本上通过3种方式联系用户兴趣和物品。如图4-1所示，第一种方式是利用用户喜欢过的物品，给用户推荐与他喜欢过的物品相似的物品，这就是前面提到的基于物品的算法。第二种方式是利用和用户兴趣相似的其他用户，给用户推荐那些和他们兴趣爱好相似的其他用户喜欢的物品，这是前面提到的基于用户的算法。除了这两种方法，第三种重要的方式是通过一些特征（feature）联系用户和物品，给用户推荐那些具有用户喜欢的特征的物品。这里的特征有不同的表现方式，比如可以表现为物品的属性集合（比如对于图书，属性集合包括作者、出版社、主题和关键词等），也可以表现为隐语义向量（latent factor vector），这可以通过前面提出的隐语义模型习得到。本章将讨论一种重要的特征表现方式——标签。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250203181241.png" alt="" /></p>
+<p>根据维基百科的定义，标签是一种无层次化结构的、用来描述信息的关键词，它可以用来描述物品的语义。根据给物品打标签的人的不同，标签应用一般分为两种：一种是让作者或者专家给物品打标签；另一种是让普通用户给物品打标签，也就是UGC（User Generated Content，用户生成的内容）的标签应用。UGC的标签系统是一种表示用户兴趣和物品语义的重要方式。当一个用户对一个物品打上一个标签，这个标签一方面描述了用户的兴趣，另一方面则表示了物品的语义，从而将用户和物品联系了起来。因此本章主要讨论UGC的标签应用，研究用户给物品打标签的行为，探讨如何通过分析这种行为给用户进行个性化推荐。</p>
+<h3 id="ugc标签系统的代表应用"><a class="header" href="#ugc标签系统的代表应用">UGC标签系统的代表应用</a></h3>
+<p>UGC标签系统是很多Web   2.0网站的必要组成部分，本节将讨论使用UGC标签系统的代表网站——UGC标签系统的鼻祖Delicious、论文书签网站CiteULike、音乐网站Last.fm、视频网站Hulu、书和电影评论网站豆瓣等。下面将分别介绍这些应用。</p>
+<p>从前面的各种应用可以看到，标签系统在各种各样的（音乐、视频和社交等）网站中都得到了广泛应用。标签系统的最大优势在于可以发挥群体的智能，获得对物品内容信息比较准确的关键词描述，而准确的内容信息是提升个性化推荐系统性能的重要资源。</p>
+<p>关于标签系统的作用， GroupLen的Shilads Wieland Sen在MoveLens电影推荐系统上做了更为深入的、基于问卷调查的研究。在博士论文中，他探讨了标签系统的不同作用，以及每种作用能够影响多大的人群，如下所示。</p>
+<p>表达  标签系统帮助我表达对物品的看法。（30%的用户同意。）</p>
+<p>组织  打标签帮助我组织我喜欢的电影。（23%的用户同意。）</p>
+<p>学习  打标签帮助我增加对电影的了解。（27%的用户同意。）</p>
+<p>发现  标签系统使我更容易发现喜欢的电影。（19%的用户同意。）</p>
+<p>决策  标签系统帮助我判定是否看某一部电影。（14%的用户同意。）</p>
+<p>上面的研究证明，标签系统确实能够帮助用户发现可能喜欢的电影，而这正是个性化推荐系统的使命之一。因此，本章将对如何发挥标签在个性化推荐中的作用进行深入探讨。</p>
+<h2 id="标签系统中的推荐问题"><a class="header" href="#标签系统中的推荐问题">标签系统中的推荐问题</a></h2>
+<p>打标签作为一种重要的用户行为，蕴含了很多用户兴趣信息，因此深入研究和利用用户打标签的行为可以很好地指导我们改进个性化推荐系统的推荐质量。同时，标签的表示形式非常简单，便于很多算法处理。</p>
+<p>标签系统中的推荐问题主要有以下两个。</p>
+<p>如何利用用户打标签的行为为其推荐物品（基于标签的推荐）？</p>
+<p>如何在用户给物品打标签时为其推荐适合该物品的标签（标签推荐）？</p>
+<p>为了研究上面的两个问题，我们首先需要解答下面3个问题。</p>
+<p>用户为什么要打标签？</p>
+<p>用户怎么打标签？</p>
+<p>用户打什么样的标签？</p>
+<h3 id="用户为什么进行标注"><a class="header" href="#用户为什么进行标注">用户为什么进行标注</a></h3>
+<p>在设计基于标签的个性化推荐系统之前，我们需要深入了解用户的标注行为（即打标签的行为），知道用户为什么要标注，用户怎么标注，只有深入了解用户的行为，我们才能基于这个行为设计出令他们满意的个性化推荐系统。</p>
+<p>Morgan Ames研究图片分享网站中用户标注的动机问题，并从两个维度进行探讨。首先是社会维度，有些用户标注是给内容上传者使用的（便于上传者组织自己的信息），而有些用户标注是给广大用户使用的（便于帮助其他用户找到信息）。另一个维度是功能维度，有些标注用于更好地组织内容，方便用户将来的查找，而另一些标注用于传达某种信息，比如照片的拍摄时间和地点等。</p>
+<h3 id="用户如何打标签"><a class="header" href="#用户如何打标签">用户如何打标签</a></h3>
+<p>在互联网中，尽管每个用户的行为看起来是随机的，但其实这些表面随机的行为背后蕴含着很多规律。这一节将通过研究Delicious数据集总结用户标注行为中的一些统计规律。</p>
+<p>德国研究人员公布过一个很庞大的Delicious数据集，该数据集包含2003年9月到2007年12月Delicious用户4.2亿条标签行为记录。本节选用该数据集2007年一个月的数据进行分析，对该数据集的统计特性进行研究。</p>
+<p>前面几章都提到，用户行为数据集中用户活跃度和物品流行度的分布都遵循长尾分布（Power Law分布）。</p>
+<h3 id="用户打什么样的标签"><a class="header" href="#用户打什么样的标签">用户打什么样的标签</a></h3>
+<p>在用户看到一个物品时，我们希望他打的标签是能够准确描述物品内容属性的关键词，但用户往往不是按照我们的想法操作，而是可能会给物品打上各种各样奇奇怪怪的标签。</p>
+<p>Scott A. Golder 总结了Delicious上的标签，将它们分为如下几类。</p>
+<p>表明物品是什么  比如是一只鸟，就会有“鸟”这个词的标签；是豆瓣的首页，就有一个标签叫“豆瓣”；是乔布斯的首页，就会有个标签叫“乔布斯”。</p>
+<p>表明物品的种类 比如在Delicious的书签中，表示一个网页类别的标签包括 article（文章）、blog（博客）、 book（图书）等。</p>
+<p>表明谁拥有物品  比如很多博客的标签中会包括博客的作者等信息。</p>
+<p>表达用户的观点  比如用户认为网页很有趣，就会打上标签funny（有趣），认为很无聊，就会打上标签boring（无聊）。</p>
+<p>用户相关的标签 比如 my favorite（我最喜欢的）、my comment（我的评论）等。</p>
+<p>用户的任务 比如 to read（即将阅读）、job search（找工作）等。</p>
+<h2 id="基于标签的推荐系统"><a class="header" href="#基于标签的推荐系统">基于标签的推荐系统</a></h2>
+<p>用户用标签来描述对物品的看法，因此标签是联系用户和物品的纽带，也是反应用户兴趣的重要数据源，如何利用用户的标签数据提高个性化推荐结果的质量是推荐系统研究的重要课题。</p>
+<p>豆瓣很好地利用了标签数据，它将标签系统融入到了整个产品线中。首先，在每本书的页面上，豆瓣都提供了一个叫做“豆瓣成员常用标签”的应用，它给出了这本书上用户最常打的标签。同时，在用户给书做评价时，豆瓣也会让用户给图书打标签。最后，在最终的个性化推荐结果里，豆瓣利用标签将用户的推荐结果做了聚类，显示了对不同标签下用户的推荐结果，从而增加了推荐的多样性和可解释性。</p>
+<p>一个用户标签行为的数据集一般由一个三元组的集合表示，其中记录(u, i, b) 表示用户u给物品i打上了标签b。当然，用户的真实标签行为数据远远比三元组表示的要复杂，比如用户打标签的时间、用户的属性数据、物品的属性数据等。但是本章为了集中讨论标签数据，只考虑上面定义的三元组形式的数据，即用户的每一次打标签行为都用一个三元组（用户、物品、标签）表示。</p>
+<h2 id="给用户推荐标签"><a class="header" href="#给用户推荐标签">给用户推荐标签</a></h2>
+<p>当用户浏览某个物品时，标签系统非常希望用户能够给这个物品打上高质量的标签，这样才能促进标签系统的良性循环。因此，很多标签系统都设计了标签推荐模块给用户推荐标签。图4-14展示了音乐网站Last.fm和豆瓣的标签推荐系统。</p>
+<p>在讨论如何给用户推荐标签之前，首先需要了解为什么要给用户推荐标签。一般认为，给用户推荐标签有以下好处。</p>
+<p>方便用户输入标签  让用户从键盘输入标签无疑会增加用户打标签的难度，这样很多用户不愿意给物品打标签，因此我们需要一个辅助工具来减小用户打标签的难度，从而提高用户打标签的参与度。</p>
+<p>提高标签质量  同一个语义不同的用户可能用不同的词语来表示。这些同义词会使标签的词表变得很庞大，而且会使计算相似度不太准确。而使用推荐标签时，我们可以对词表进行选择，首先保证词表不出现太多的同义词，同时保证出现的词都是一些比较热门的、有代表性的词。</p>
+<h2 id="扩展阅读"><a class="header" href="#扩展阅读">扩展阅读</a></h2>
+<p>本章主要讨论了UGC标签在推荐系统中的应用。标签作为描述语义的重要媒介，无论是对于描述用户兴趣还是表示物品的内容都有很重要的意义。标签在推荐系统中的应用主要集中在两个问题上，一个是如何利用用户打标签的行为给用户推荐物品，另一个是如何给用户推荐标签。本章在深入分析用户标签行为的基础上对这两个问题进行了深入探讨。</p>
+<p>关于标签的问题，最近几年在学术界获得了广泛关注。ECML/PKDD在2008年曾经推出过基于标签的推荐系统比赛。在这些研究中涌现了很多新的方法，比如张量分解（tensor factorization）、基于LDA的算法、基于图的算法等。不过这些算法很多具有较高的复杂度，在实际系统中应用起来还有很多实际的困难需要解决。GroupLens的研究人员给MovieLens系统做了很多标签方面的工作。Shilad Sen在论文中研究了如何利用标签联系用户和物品并给用户进行个性化电影推荐。Jesse  Vig在论文中研究了如何利用标签进行推荐解释，他将用户和物品之间的关系转化为用户对标签的兴趣（tag preference）以及标签和物品的相关度（tag relevance）两种因素。同时他们研究了如何对标签进行清理，以及如何选择合适的标签进行解释。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../推荐系统实践/推荐系统冷启动问题.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../推荐系统实践/利用上下文信息.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../推荐系统实践/推荐系统冷启动问题.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../推荐系统实践/利用上下文信息.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

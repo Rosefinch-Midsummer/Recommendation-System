@@ -1,0 +1,282 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>评分预测问题 - Mdbook Template</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Mdbook Template</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="评分预测问题"><a class="header" href="#评分预测问题">评分预测问题</a></h1>
+<ul>
+<li><a href="#%E7%A6%BB%E7%BA%BF%E5%AE%9E%E9%AA%8C%E6%96%B9%E6%B3%95">离线实验方法</a></li>
+<li><a href="#%E8%AF%84%E5%88%86%E9%A2%84%E6%B5%8B%E7%AE%97%E6%B3%95">评分预测算法</a>
+<ul>
+<li><a href="#%E5%B9%B3%E5%9D%87%E5%80%BC">平均值</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E9%82%BB%E5%9F%9F%E7%9A%84%E6%96%B9%E6%B3%95">基于邻域的方法</a></li>
+<li><a href="#%E9%9A%90%E8%AF%AD%E4%B9%89%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3%E6%A8%A1%E5%9E%8B">隐语义模型与矩阵分解模型</a></li>
+<li><a href="#%E5%8A%A0%E5%85%A5%E6%97%B6%E9%97%B4%E4%BF%A1%E6%81%AF">加入时间信息</a></li>
+<li><a href="#%E6%A8%A1%E5%9E%8B%E8%9E%8D%E5%90%88">模型融合</a></li>
+</ul>
+</li>
+</ul>
+<p>本书到目前为止都是在讨论TopN推荐，即给定一个用户，如何给他生成一个长度为N的推荐列表，使该推荐列表能够尽量满足用户的兴趣和需求。本书之所以如此重视TopN推荐，是因为它非常接近于满足实际系统的需求，实际系统绝大多数情况下就是给用户提供一个包括N个物品的个性化推荐列表。</p>
+<p>但是，很多从事推荐系统研究的同学最早接触的却是评分预测问题。从GroupLens到Netflix Prize到Yahoo! Music的KDD Cup，评分预测问题都是推荐系统研究的核心。评分预测问题最基本的数据集就是用户评分数据集。该数据集由用户评分记录组成，每一条评分记录是一个三元组<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">i</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mclose">)</span></span></span></span>，表示用户u给物品i赋予了评分r，本章用<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示用户u对物品i的评分。因为用户不可能对所有物品都评分，因此评分预测问题就是如何通过已知的用户历史评分记录预测未知的用户评分记录。表8-1是一个评分预测问题的例子，在该例子中每个用户都对一些电影给出了评分，比如用户A给《虎口脱险》评了1分，给《唐山大兄》评了5分，给《少林足球》评了4分，给《大话西游》评了5分。但是，每个用户都没有对所有电影评分，比如用户A没有给《变形金刚》和《黑客帝国》评分。那么，当用户浏览网页并看到《变形金刚》和《黑客帝国》时，我们希望能够给用户一个分数表明我们认为用户是否会喜欢这部电影，而这个分数也可以帮助用户决策是否要看这部电影，而如何提高这个分数的预测精度就是评分预测要解决的主要问题。</p>
+<p>本章将主要讨论评分预测这一推荐领域的经典问题。因为这一问题的研究集中在学术界，所以本章的介绍也比较偏学术，相对前面各章会增加一些公式和理论的讨论。</p>
+<h2 id="离线实验方法"><a class="header" href="#离线实验方法">离线实验方法</a></h2>
+<p>评分预测问题基本都通过离线实验进行研究。在给定用户评分数据集后，研究人员会将数据集按照一定的方式分成训练集和测试集，然后根据测试集建立用户兴趣模型来预测测试集中的用户评分。</p>
+<p>评分预测的目的就是找到最好的模型最小化测试集的RMSE。</p>
+<p>关于如何划分训练集和测试集，如果是和时间无关的预测任务，可以以均匀分布随机划分数据集，即对每个用户，随机选择一些评分记录作为测试集，剩下的记录作为测试集。如果是和时间相关的任务，那么需要将用户的旧行为作为训练集，将用户的新行为作为测试集。Netflix通过如下方式划分数据集，首先将每个用户的评分记录按照从早到晚进行排序，然后将用户最后10%的评分记录作为测试集，前90%的评分记录作为训练集。</p>
+<h2 id="评分预测算法"><a class="header" href="#评分预测算法">评分预测算法</a></h2>
+<p>自从Netflix  Prize大赛以来，不同国家的不同研究人员提出了很多评分预测算法，而Netflix Prize的获胜队伍更是用了上百个不同的模型才取得了最终的成功。本节将从简单到复杂地介绍具有代表性的算法，并给出它们在Netflix数据集上的效果。</p>
+<h3 id="平均值"><a class="header" href="#平均值">平均值</a></h3>
+<p>最简单的评分预测算法是利用平均值预测用户对物品的评分的。下面各节将分别介绍各种不同的平均值。</p>
+<ol>
+<li>全局平均值</li>
+<li>用户评分平均值</li>
+<li>物品评分平均值</li>
+<li>用户分类对物品分类的平均值</li>
+</ol>
+<p>除了这3种特殊的平均值，在用户评分数据上还可以定义很多不同的分类函数。</p>
+<p>用户和物品的平均分  对于一个用户，可以计算他的评分平均分。然后将所有用户按照评分平均分从小到大排序，并将用户按照平均分平均分成N类。物品也可以用同样的方式分类。</p>
+<p>用户活跃度和物品流行度  对于一个用户，将他评分的物品数量定义为他的活跃度。得到用户活跃度之后，可以将用户通过活跃度从小到大排序，然后平均分为N类。物品的流行度定义为给物品评分的用户数目，物品也可以按照流行度均匀分成N类。</p>
+<h3 id="基于邻域的方法"><a class="header" href="#基于邻域的方法">基于邻域的方法</a></h3>
+<p>基于用户的邻域算法和基于物品的邻域算法都可以应用到评分预测中。</p>
+<p>对于如何计算物品的相似度，Badrul  Sarwar等在论文里做了详细的研究，文章比较了3种主要的相似度。第一种是普通的余弦相似度（cosine similarity），第二种是皮尔逊系数（pearson correlation)，第三种被Sarwar称为修正的余弦相似度（adjust cosine similarity）。</p>
+<p>Sarwar利用MovieLens最小的数据集对3种相似度进行了对比，并将MAE作为评测指标。实验结果表明利用修正后的余弦相似度进行评分预测可以获得最优的MAE。不过需要说明的是，在一个数据集上的实验并不意味着在其他数据集上也能获得相同的结果。</p>
+<h3 id="隐语义模型与矩阵分解模型"><a class="header" href="#隐语义模型与矩阵分解模型">隐语义模型与矩阵分解模型</a></h3>
+<p>最近这几年做机器学习和数据挖掘研究的人经常会看到下面的各种名词，即隐含类别模型（Latent  Class  Model）、隐语义模型（Latent  Factor  Model）、pLSA、LDA、Topic  Model、Matrix Factorization、Factorized Model。</p>
+<p>这些名词在本质上应该是同一种思想体系的不同扩展。在推荐系统领域，提的最多的就是潜语义模型和矩阵分解模型。其实，这两个名词说的是一回事，就是如何通过降维的方法将评分矩阵补全。</p>
+<p>用户的评分行为可以表示成一个评分矩阵R，其中<code>R[u][i]</code>就是用户u对物品i的评分。但是，用户不会对所有的物品评分，所以这个矩阵里有很多元素都是空的，这些空的元素称为缺失值（missing  value）。因此，评分预测从某种意义上说就是填空，如果一个用户对一个物品没有评过分，那么推荐系统就要预测这个用户是否是否会对这个物品评分以及会评几分。</p>
+<ol>
+<li>传统的SVD分解</li>
+</ol>
+<p>对于如何补全一个矩阵，历史上有过很多的研究。一个空的矩阵有很多种补全方法，而我们要找的是一种对矩阵扰动最小的补全方法。那么什么才算是对矩阵扰动最小呢？一般认为，如果补全后矩阵的特征值和补全之前矩阵的特征值相差不大，就算是扰动比较小。所以，最早的矩阵分解模型就是从数学上的SVD（奇异值分解）开始的。</p>
+<ol start="2">
+<li>Simon Funk的SVD分解</li>
+</ol>
+<p>正是由于上面的两个缺点，SVD分解算法提出几年后在推荐系统领域都没有得到广泛的关注。直到2006年Netflix  Prize开始后，Simon  Funk在博客上公布了一个算法①（称为Funk-SVD），一下子引爆了学术界对矩阵分解类方法的关注。而且，Simon Funk的博客也成为了很多学术论文经常引用的对象。Simon  Funk提出的矩阵分解方法后来被Netflix  Prize的冠军Koren称为Latent Factor Model（简称为LFM）。</p>
+<ol start="3">
+<li>加入偏置项后的LFM</li>
+<li>考虑邻域影响的LFM</li>
+</ol>
+<h3 id="加入时间信息"><a class="header" href="#加入时间信息">加入时间信息</a></h3>
+<p>无论是MovieLens数据集还是Netflix Prize数据集都包含时间信息，对于用户每次的评分行为，都给出了行为发生的时间。因此，在Netflix Prize比赛期间，很多研究人员提出了利用时间信息降低预测误差的方法。</p>
+<p>利用时间信息的方法也主要分成两种，一种是将时间信息应用到基于邻域的模型中，另一种是将时间信息应用到矩阵分解模型中。下面将分别介绍这两种算法。</p>
+<ol>
+<li>基于邻域的模型融合时间信息</li>
+</ol>
+<p>因为Netflix Prize数据集中用户数目太大，所以基于用户的邻域模型很少被使用，主要是因为存储用户相似度矩阵非常困难。因此，本节主要讨论如何将时间信息融合到基于物品的邻域模型中。</p>
+<p>Netflix  Prize的参赛队伍BigChaos在技术报告中提到了一种融入时间信息的基于邻域的模型，本节将这个模型称为TItemCF。</p>
+<ol start="2">
+<li>基于矩阵分解的模型融合时间信息</li>
+</ol>
+<p>在引入时间信息后，用户评分矩阵不再是一个二维矩阵，而是变成了一个三维矩阵。不过， 我们可以仿照分解二维矩阵的方式对三维矩阵进行分解。</p>
+<h3 id="模型融合"><a class="header" href="#模型融合">模型融合</a></h3>
+<p>Netflix Prize的最终获胜队伍通过融合上百个模型的结果才取得了最终的成功。由此可见模型融合对提高评分预测的精度至关重要。本节讨论模型融合的两种不同技术。</p>
+<ol>
+<li>模型级联融合</li>
+</ol>
+<p>由上面的描述可以发现，级联融合很像Adaboost算法。和Adaboost算法类似，该方法每次产生一个新模型，按照一定的参数加到旧模型上去，从而使训练集误差最小化。不同的是，这里每次生成新模型时并不对样本集采样，针对那些预测错的样本，而是每次都还是利用全样本集进行预测，但每次使用的模型都有区别。</p>
+<p>一般来说，级联融合的方法都用于简单的预测器，比如前面提到的平均值预测器。</p>
+<ol start="2">
+<li>模型加权融合</li>
+</ol>
+<p>最简单的融合算法就是线性融合，即最终的预测器ˆr是这K个预测器的线性加权。</p>
+<p>一般来说，评分预测问题的解决需要在训练集上训练K个不同的预测器，然后在测试集上作出预测。但是，如果我们继续在训练集上融合K个预测器，得到线性加权系数，就会造成过拟合的问题。因此，在模型融合时一般采用如下方法。</p>
+<p>假设数据集已经被分为了训练集A和测试集B，那么首先需要将训练集A按照相同的分割方法分为A1和A2，其中A2的生成方法和B的生成方法一致，且大小相似。</p>
+<p>在A1上训练K个不同的预测器，在A2上作出预测。因为我们知道A2上的真实评分值，所以可以在A2上利用最小二乘法计算出线性融合系数<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0037em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。</p>
+<p>在A上训练K个不同的预测器，在B上作出预测，并且将这K个预测器在B上的预测结果按照已经得到的线性融合系数加权融合，以得到最终的预测结果。</p>
+<p>除了线性融合，还有很多复杂的融合方法，比如利用人工神经网络的融合算法。其实，模型融合问题就是一个典型的回归问题，因此所有的回归算法都可以用于模型融合。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../推荐系统实践/推荐系统实例.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../推荐系统实践/推荐系统实例.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
