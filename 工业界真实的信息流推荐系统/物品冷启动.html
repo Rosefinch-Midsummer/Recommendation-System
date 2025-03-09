@@ -1,0 +1,649 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>物品冷启动 - 推荐系统</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">推荐系统</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="物品冷启动"><a class="header" href="#物品冷启动">物品冷启动</a></h1>
+<ul>
+<li><a href="#%E4%BC%98%E5%8C%96%E7%9B%AE%E6%A0%87%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87">优化目标&amp;评价指标</a>
+<ul>
+<li><a href="#%E6%96%B0%E7%AC%94%E8%AE%B0%E5%86%B7%E5%90%AF%E5%8A%A8">新笔记冷启动</a></li>
+<li><a href="#%E4%BC%98%E5%8C%96%E5%86%B7%E5%90%AF%E7%9A%84%E7%9B%AE%E6%A0%87">优化冷启的目标</a></li>
+<li><a href="#%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87">评价指标</a>
+<ul>
+<li><a href="#%E4%BD%9C%E8%80%85%E4%BE%A7%E6%8C%87%E6%A0%87">作者侧指标</a></li>
+<li><a href="#%E4%BD%9C%E8%80%85%E4%BE%A7%E6%8C%87%E6%A0%87-1">作者侧指标</a></li>
+<li><a href="#%E5%86%85%E5%AE%B9%E4%BE%A7%E6%8C%87%E6%A0%87">内容侧指标</a></li>
+</ul>
+</li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+</li>
+<li><a href="#%E7%AE%80%E5%8D%95%E7%9A%84%E5%8F%AC%E5%9B%9E%E9%80%9A%E9%81%93">简单的召回通道</a>
+<ul>
+<li><a href="#%E5%8F%AC%E5%9B%9E%E7%9A%84%E4%BE%9D%E6%8D%AE">召回的依据</a></li>
+<li><a href="#%E5%86%B7%E5%90%AF%E5%8F%AC%E5%9B%9E%E7%9A%84%E5%9B%B0%E9%9A%BE">冷启召回的困难</a></li>
+<li><a href="#%E5%8F%AC%E5%9B%9E%E9%80%9A%E9%81%93">召回通道</a>
+<ul>
+<li><a href="#%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B">双塔模型</a></li>
+<li><a href="#%E7%B1%BB%E7%9B%AE%E5%8F%AC%E5%9B%9E%E5%92%8C%E5%85%B3%E9%94%AE%E8%AF%8D%E5%8F%AC%E5%9B%9E">类目召回和关键词召回</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E8%81%9A%E7%B1%BB%E5%8F%AC%E5%9B%9E">聚类召回</a>
+<ul>
+<li><a href="#%E8%81%9A%E7%B1%BB%E5%8F%AC%E5%9B%9E%E5%9F%BA%E6%9C%AC%E6%80%9D%E6%83%B3">聚类召回基本思想</a></li>
+<li><a href="#%E8%81%9A%E7%B1%BB%E7%B4%A2%E5%BC%95">聚类索引</a>
+<ul>
+<li><a href="#%E7%BA%BF%E4%B8%8A%E5%8F%AC%E5%9B%9E">线上召回</a></li>
+</ul>
+</li>
+<li><a href="#%E5%86%85%E5%AE%B9%E7%9B%B8%E4%BC%BC%E5%BA%A6%E6%A8%A1%E5%9E%8B">内容相似度模型</a>
+<ul>
+<li><a href="#%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83">模型的训练</a></li>
+<li><a href="#%E7%A7%8D%E5%AD%90%E7%AC%94%E8%AE%B0%E6%AD%A3%E6%A0%B7%E6%9C%AC">&lt;种子笔记，正样本&gt;</a></li>
+<li><a href="#%E7%A7%8D%E5%AD%90%E7%AC%94%E8%AE%B0-%E8%B4%9F%E6%A0%B7%E6%9C%AC">&lt;种子笔记， 负样本&gt;</a></li>
+</ul>
+</li>
+<li><a href="#%E8%81%9A%E7%B1%BB%E5%8F%AC%E5%9B%9E%E6%80%BB%E7%BB%93">聚类召回总结</a></li>
+</ul>
+</li>
+<li><a href="#look-alike%E5%8F%AC%E5%9B%9E">Look-Alike召回</a>
+<ul>
+<li><a href="#%E7%94%A8%E4%BA%8E%E4%BA%92%E8%81%94%E7%BD%91%E5%B9%BF%E5%91%8A">用于互联网广告</a></li>
+<li><a href="#look-alike%E4%BA%BA%E7%BE%A4%E6%89%A9%E6%95%A3%E5%8F%AC%E5%9B%9E">Look-Alike人群扩散召回</a></li>
+<li><a href="#look-alike%E7%94%A8%E4%BA%8E%E6%96%B0%E7%AC%94%E8%AE%B0%E5%8F%AC%E5%9B%9E">Look-Alike用于新笔记召回</a></li>
+</ul>
+</li>
+<li><a href="#%E6%B5%81%E9%87%8F%E8%B0%83%E6%8E%A7">流量调控</a>
+<ul>
+<li><a href="#%E6%89%B6%E6%8C%81%E6%96%B0%E7%AC%94%E8%AE%B0%E7%9A%84%E7%9B%AE%E7%9A%84">扶持新笔记的目的</a></li>
+<li><a href="#%E5%B7%A5%E4%B8%9A%E7%95%8C%E7%9A%84%E5%81%9A%E6%B3%95">工业界的做法</a></li>
+<li><a href="#%E6%B5%81%E9%87%8F%E8%B0%83%E6%8E%A7%E6%8A%80%E6%9C%AF%E7%9A%84%E5%8F%91%E5%B1%95">流量调控技术的发展</a>
+<ul>
+<li><a href="#%E6%96%B0%E7%AC%94%E8%AE%B0%E6%8F%90%E6%9D%83">新笔记提权</a></li>
+<li><a href="#%E6%96%B0%E7%AC%94%E8%AE%B0%E4%BF%9D%E9%87%8F">新笔记保量</a></li>
+</ul>
+</li>
+<li><a href="#%E5%B7%AE%E5%BC%82%E5%8C%96%E4%BF%9D%E9%87%8F">差异化保量</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93-1">总结</a></li>
+</ul>
+</li>
+<li><a href="#%E5%86%B7%E5%90%AF%E7%9A%84ab%E6%B5%8B%E8%AF%95">冷启的AB测试</a>
+<ul>
+<li><a href="#%E6%96%B0%E7%AC%94%E8%AE%B0%E5%86%B7%E5%90%AF%E7%9A%84ab%E6%B5%8B%E8%AF%95">新笔记冷启的AB测试</a></li>
+<li><a href="#%E7%94%A8%E6%88%B7%E4%BE%A7%E5%AE%9E%E9%AA%8C">用户侧实验</a></li>
+<li><a href="#%E4%BD%9C%E8%80%85%E4%BE%A7%E5%AE%9E%E9%AA%8C">作者侧实验</a>
+<ul>
+<li><a href="#%E6%96%B9%E6%A1%88%E4%B8%80">方案一</a></li>
+<li><a href="#%E6%96%B9%E6%A1%88%E4%BA%8C">方案二</a></li>
+<li><a href="#%E6%96%B9%E6%A1%88%E4%B8%89%E6%8A%8A%E8%80%81%E7%AC%94%E8%AE%B0%E4%B9%9F%E5%88%86%E4%B8%BA%E5%AE%9E%E9%AA%8C%E7%BB%84%E5%92%8C%E5%AF%B9%E7%85%A7%E7%BB%84">方案三：把老笔记也分为实验组和对照组</a></li>
+</ul>
+</li>
+<li><a href="#%E6%80%BB%E7%BB%93-2">总结</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="优化目标评价指标"><a class="header" href="#优化目标评价指标">优化目标&amp;评价指标</a></h1>
+<p>物品冷启动指的是如何对新发布的物品做分发。优化物品冷启动在小红书这样的 User-Generated Content (UGC) 平台尤为重要，这是因为新物品数量巨大，内容质量良莠不齐，分发非常困难。</p>
+<p>UGC 平台的物品冷启动有三个目标：</p>
+<ol>
+<li>精准推荐：克服冷启的困难，把新物品推荐给合适的用户，不引起用户反感。</li>
+<li>激励发布：流量向低曝光新物品倾斜，激励发布。</li>
+<li>挖掘高潜：通过初期小流量的试探，找到高质量的物品，给与流量倾斜。</li>
+</ol>
+<p>UGC 平台的物品冷启动主要考察三种指标：</p>
+<ol>
+<li>作者侧指标，包括发布渗透率、人均发布量。</li>
+<li>用户侧指标，包括大盘消费指标和新物品消费指标。</li>
+<li>内容侧指标，比如高热物品占比。</li>
+</ol>
+<p>UGC平台什么时候需要物品冷启动？</p>
+<ul>
+<li>小红书上用户新发布的笔记。</li>
+<li>B站上用户新上传的视频。</li>
+<li>今日头条上作者新发布的文章。</li>
+</ul>
+<p>主要研究UGC的物品冷启动，UGC冷启动难度高于PGC。</p>
+<h2 id="新笔记冷启动"><a class="header" href="#新笔记冷启动">新笔记冷启动</a></h2>
+<p>为什么要特殊对待新笔记？</p>
+<ul>
+<li>新笔记缺少与用户的交互，导致推荐的难度大、效果差。</li>
+<li>扶持新发布、低曝光的笔记，可以增强作者发布意愿。</li>
+</ul>
+<h2 id="优化冷启的目标"><a class="header" href="#优化冷启的目标">优化冷启的目标</a></h2>
+<ol>
+<li>精准推荐：克服冷启的困难，把新笔记推荐给合适的用户，不引起用户反感。</li>
+<li>激励发布：流量向低曝光新笔记倾斜；激励作者发布</li>
+<li>挖掘高潜：通过初期小流量的试探，找到高质量的笔记，给与流量倾斜。</li>
+</ol>
+<h2 id="评价指标"><a class="header" href="#评价指标">评价指标</a></h2>
+<p>作者侧指标：发布渗透率、人均发布量。</p>
+<p>用户侧指标：</p>
+<ul>
+<li>新笔记指标：新笔记的点击率、交互率。</li>
+<li>大盘指标：消费时长、日活、月活。</li>
+</ul>
+<p>内容侧指标：高热笔记占比。</p>
+<h3 id="作者侧指标"><a class="header" href="#作者侧指标">作者侧指标</a></h3>
+<p>发布渗透率（penetration rate）=当日发布人数／日活人数</p>
+<p>发布一篇或以上，就算一个发布人数。</p>
+<p>例：当日发布人数=100万，日活人数=2000万，发布渗透率= 100 ／ 2000 = 5%</p>
+<p>人均发布量=当日发布笔记数／日活人数</p>
+<p>例：每日发布笔记数=200万，日活人数=2000万，人均发布量=200／ 2000=0.1</p>
+<h3 id="作者侧指标-1"><a class="header" href="#作者侧指标-1">作者侧指标</a></h3>
+<p>发布渗透率、人均发布量反映出作者的发布积极性。</p>
+<p>冷启的重要优化目标是促进发布，增大内容池。</p>
+<p>新笔记获得的曝光越多，首次曝光和交互出现得越早，作者发布积极性越高。</p>
+<p>**新笔记的消费指标</p>
+<ul>
+<li>新笔记的点击率、交互率。问题：曝光的基尼系数很大。少数头部新笔记占据了大部分的曝光。</li>
+<li>分别考察高曝光、低曝光新笔记。高曝光：比如&gt;1000次曝光。低曝光：比如&lt;1000次曝光°</li>
+</ul>
+<p>高曝光的笔记无需冷启动处理，也能得到精准推荐。我们应该重点关注低曝光的笔记。</p>
+<p><strong>用户侧指标大盘消费指标</strong>：大盘的消费时长、日活、月活。</p>
+<p>大力扶持低曝光新笔记会发生什么？</p>
+<ul>
+<li>作者侧发布指标变好。</li>
+<li>用户侧大盘消费指标变差。</li>
+</ul>
+<h3 id="内容侧指标"><a class="header" href="#内容侧指标">内容侧指标</a></h3>
+<p>高热笔记占比</p>
+<p>高热笔记：前30天获得1000+次点击。</p>
+<p>高热笔记占比越高，说明冷启阶段挖掘优质笔记的能力越强。</p>
+<h2 id="总结"><a class="header" href="#总结">总结</a></h2>
+<p>作者侧指标：发布渗透率、人均发布量。</p>
+<p>用户侧指标：新笔记消费指标、大盘消费指标。</p>
+<p>内容侧指标：高热笔记占比</p>
+<p>冷启动的优化点：</p>
+<ul>
+<li>优化全链路（包括召回和排序）</li>
+<li>流量调控 (流量怎么在新物品、老物品中分配）</li>
+</ul>
+<h1 id="简单的召回通道"><a class="header" href="#简单的召回通道">简单的召回通道</a></h1>
+<p>这节课的内容是物品冷启动 (item cold start) 中的召回。冷启动召回的难点是缺少用户交互，还没学好笔记 ID embedding，导致双塔模型效果不好。而且缺少用户交互会导致 ItemCF 不适用。</p>
+<p>这节课介绍两种简单的召回通道：</p>
+<ol>
+<li>改造双塔模型，使得它适用于冷启动。</li>
+<li>类目召回。</li>
+</ol>
+<h2 id="召回的依据"><a class="header" href="#召回的依据">召回的依据</a></h2>
+<ul>
+<li>√自带图片、文字、地点。</li>
+<li>√算法或人工标注的标签。</li>
+<li>×没有用户点击、点赞等信息。</li>
+<li>× 没有笔记 ID embedding。</li>
+</ul>
+<h2 id="冷启召回的困难"><a class="header" href="#冷启召回的困难">冷启召回的困难</a></h2>
+<ul>
+<li>缺少用户交互，还没学好笔记ID embedding，导致双塔模型效果不好。</li>
+<li>缺少用户交互，导致ItemCF不适用。</li>
+</ul>
+<p>为什么ItemCF不适用于物品冷启动？</p>
+<h2 id="召回通道"><a class="header" href="#召回通道">召回通道</a></h2>
+<ul>
+<li>ItemCF召回 (不适用）</li>
+<li>双塔模型（改造后适用）</li>
+<li>类目、关键词召回（适用）</li>
+<li>聚类召回（适用）</li>
+<li>Look-Alike召回（适用）</li>
+</ul>
+<h3 id="双塔模型"><a class="header" href="#双塔模型">双塔模型</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225103322.png" alt="" /></p>
+<p>改进ID Embedding来改造双塔模型。</p>
+<p>改进方案 1：新笔记使用 default embedding。</p>
+<ul>
+<li>物品塔做ID embedding 时，让所有新笔记共享一个 ID，而不是用自己真正的ID。</li>
+<li>Default embedding：共享的 ID 对应的 embedding 向量。</li>
+<li>到下次模型训练的时候，新笔记才有自己的ID embedding 向量。</li>
+</ul>
+<p>改进方案 2：利用相似笔记 embedding 向量。</p>
+<ul>
+<li>查找top K内容最相似的高曝笔记。</li>
+<li>把k个高曝笔记的 embedding 向量取平均，作为新笔记的embedding。</li>
+</ul>
+<p>在实践中，通常使用多个向量召回池。</p>
+<ul>
+<li>多个召回池，让新笔记有更多曝光机会。可以有1小时新笔记，6小时新笔记，24小时新笔记，30天笔记。</li>
+<li>共享同一个双塔模型，那么多个召回池不增加训练的代价。</li>
+</ul>
+<h3 id="类目召回和关键词召回"><a class="header" href="#类目召回和关键词召回">类目召回和关键词召回</a></h3>
+<p>用户画像</p>
+<p>感兴趣的类目：美食、科技数码、电影····</p>
+<p>感兴趣的关键词：纽约、职场、搞笑、程序员、大学······</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225103715.png" alt="" /></p>
+<p><strong>基于类目的召回</strong></p>
+<ul>
+<li>系统维护类目索引：类目→笔记列表 (按时间倒排)</li>
+<li>用类目索引做召回：用户画像→类目→笔记列表</li>
+<li>取回笔记列表上前k篇笔记（即最新的k篇）</li>
+</ul>
+<p><strong>基于关键词的召回</strong></p>
+<p>系统维护关键词索引：关键词→ 笔记列表（按时间倒排）</p>
+<p>根据用户画像上的关键词做召回。</p>
+<p><strong>缺点</strong>：</p>
+<p>缺点1：只对刚刚发布的新笔记有效。</p>
+<ul>
+<li>取回某类目/关键词下最新的k篇笔记。</li>
+<li>发布几小时之后，就再没有机会被召回。</li>
+</ul>
+<p>缺点2：弱个性化，不够精准。</p>
+<p>优点：类目召回和关键词召回能让笔记立即获得曝光，有助于提升作者的发布积极性。</p>
+<h1 id="聚类召回"><a class="header" href="#聚类召回">聚类召回</a></h1>
+<p>这节课继续讲解物品冷启的召回。聚类召回是基于物品内容的召回通道。它假设如果用户喜欢一个物品，那么用户会喜欢内容相似的其他物品。使用聚类召回，需要事先训练一个多模态神经网络，将笔记图文表征为向量，并对向量做聚类，然后建索引。</p>
+<h2 id="聚类召回基本思想"><a class="header" href="#聚类召回基本思想">聚类召回基本思想</a></h2>
+<p>如果用户喜欢一篇笔记，那么他会喜欢内容相似的笔记。</p>
+<p>事先训练一个神经网络，基于笔记的类目和图文内容，把笔记映射到向量。</p>
+<p>对笔记向量做聚类，划分为1000 cluster，记录每个 cluster 的中心方向。(k-means 聚类，用余弦相似度。）</p>
+<h2 id="聚类索引"><a class="header" href="#聚类索引">聚类索引</a></h2>
+<p>一篇新笔记发布之后，用神经网络把它映射到一个特征向量。</p>
+<p>从1000个向量（对应1000个cluster）中找到最相似的向量，作为新笔记的 cluster 。</p>
+<p>索引：cluster → 笔记ID列表（按时间倒排）</p>
+<h3 id="线上召回"><a class="header" href="#线上召回">线上召回</a></h3>
+<p>给定用户ID，找到他的 last-n 交互的笔记列表，把这些笔记作为种子笔记。</p>
+<p>把每篇种子笔记映射到向量，寻找最相似的cluster。（知道了用户对哪些 cluster 感兴趣。）</p>
+<p>从每个 cluster 的笔记列表中，取回最新的 m 篇笔记。</p>
+<p>最多取回 m*n 篇新笔记。</p>
+<h2 id="内容相似度模型"><a class="header" href="#内容相似度模型">内容相似度模型</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225104304.png" alt="" /></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225104338.png" alt="" /></p>
+<h3 id="模型的训练"><a class="header" href="#模型的训练">模型的训练</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225104416.png" alt="" /></p>
+<p>基本想法：鼓励cos(a,b+)大于cos(a,b-)</p>
+<p>常用损失函数：</p>
+<ul>
+<li>Triplet hinge loss</li>
+<li>Triplet logistic loss</li>
+</ul>
+<p><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0713em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord textbf">Triplet hinge loss:</span></span><span class="mord mathnormal">L</span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8213em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">+</span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8213em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">−</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.2em;vertical-align:-0.35em;"></span><span class="mop">max</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size1">(</span></span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop">cos</span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8213em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">−</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mop">cos</span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8213em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">+</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size1">)</span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">.</span></span></span></span></span></p>
+<p><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord textbf">Triplet logistic loss:</span></span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:1.0713em;vertical-align:-0.25em;"></span><span class="mord mathnormal">L</span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8213em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">+</span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8213em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">−</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.2em;vertical-align:-0.35em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size1">(</span></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mop">exp</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size1">(</span></span><span class="mop">cos</span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8213em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">−</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mop">cos</span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8213em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">+</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size1">)</span></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size1">)</span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">.</span></span></span></span></span></p>
+<h3 id="种子笔记正样本"><a class="header" href="#种子笔记正样本">&lt;种子笔记，正样本&gt;</a></h3>
+<p>方法一：人工标注二元组的相似度，人工标注代价太大，不划算。</p>
+<p>方法二：算法自动选正样本</p>
+<p>筛选条件：</p>
+<ul>
+<li>只用高曝光笔记作为二元组（因为有充足的用户交互信息）。</li>
+<li>两篇笔记有相同的二级类目，比如都是“菜谱教程”。</li>
+</ul>
+<p>用 ItemCF 的物品相似度选正样本。</p>
+<h3 id="种子笔记-负样本"><a class="header" href="#种子笔记-负样本">&lt;种子笔记， 负样本&gt;</a></h3>
+<p>从全体笔记中随机选出满足条件的：</p>
+<ul>
+<li>字数较多（神经网络提取的文本信息有效）。</li>
+<li>笔记质量高，避免图文无关。</li>
+</ul>
+<h2 id="聚类召回总结"><a class="header" href="#聚类召回总结">聚类召回总结</a></h2>
+<p>基本思想：根据用户的点赞、收藏、转发记录，推荐内容相似的笔记。</p>
+<p>线下训练：多模态神经网络把图文内容映射成向量。</p>
+<p>线上服务：用户喜欢的笔记 → 特征向量 → 最近的Cluster → 新笔记</p>
+<h1 id="look-alike召回"><a class="header" href="#look-alike召回">Look-Alike召回</a></h1>
+<p>这节课继续介绍物品冷启动。Look-Alike 是一种召回通道，对冷启很有效。Look-Alike 适用于发布一段时间、但是点击次数不高的物品。物品从发布到热门，主要的透出渠道会经历三个阶段：</p>
+<ol>
+<li>类目召回、聚类召回。它们是基于内容的召回通道，适用于刚刚发布的物品。</li>
+<li>Look-Alike 召回。它适用于有点击，但是点击次数不高的物品。</li>
+<li>双塔、ItemCF、Swing 等等。它们是基于用户行为的召回通道，适用于点击次数较高的物品。</li>
+</ol>
+<h2 id="用于互联网广告"><a class="header" href="#用于互联网广告">用于互联网广告</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225104916.png" alt="" /></p>
+<p>Look-Alike用于互联网广告</p>
+<p>如何计算两个用户的相似度？</p>
+<ul>
+<li>UserCF：两个用户有共同的兴趣点。</li>
+<li>Embedding：两个用户向量的cosine较大。</li>
+</ul>
+<h2 id="look-alike人群扩散召回"><a class="header" href="#look-alike人群扩散召回">Look-Alike人群扩散召回</a></h2>
+<p>点击、点赞、收藏、转发——用户对笔记可能感兴趣</p>
+<p>把有交互的用户作为新笔记的种子用户。</p>
+<p>用look-alike 在相似用户中扩散。</p>
+<h2 id="look-alike用于新笔记召回"><a class="header" href="#look-alike用于新笔记召回">Look-Alike用于新笔记召回</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250302112702.png" alt="" /></p>
+<ul>
+<li>近线更新特征向量</li>
+<li>特征向量是有交互的用户的向量的平均。</li>
+<li>每当有用户交互该物品，更新笔记的特征向量。</li>
+</ul>
+<p>近线更新指近期更新，不用实时更新。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250302112910.png" alt="" /></p>
+<h1 id="流量调控"><a class="header" href="#流量调控">流量调控</a></h1>
+<p>流量调控是物品冷启动最重要的一环，直接影响作者发布指标。流量调控的发展通常会经历这几个阶段：</p>
+<ol>
+<li>在推荐结果中强插新笔记。</li>
+<li>对新笔记做提权（boost）。</li>
+<li>通过提权，对新笔记做保量。</li>
+<li>差异化保量。</li>
+</ol>
+<h2 id="扶持新笔记的目的"><a class="header" href="#扶持新笔记的目的">扶持新笔记的目的</a></h2>
+<p>目的1：促进发布，增大内容池。</p>
+<ul>
+<li>新笔记获得的曝光越多，作者创作积极性越高。</li>
+<li>反映在发布渗透率、人均发布量。</li>
+</ul>
+<p>目的2：挖掘优质笔记。</p>
+<ul>
+<li>做探索，让每篇新笔记都能获得足够曝光。</li>
+<li>挖掘的能力反映在高热笔记占比。</li>
+</ul>
+<h2 id="工业界的做法"><a class="header" href="#工业界的做法">工业界的做法</a></h2>
+<ul>
+<li>假设推荐系统只分发年龄&lt;30 天的笔记。</li>
+<li>假设采用自然分发，新笔记（年龄&lt;24小时) 的曝光占比为 1/30。</li>
+<li>扶持新笔记，让新笔记的曝光占比远大于1/30。</li>
+</ul>
+<h2 id="流量调控技术的发展"><a class="header" href="#流量调控技术的发展">流量调控技术的发展</a></h2>
+<ol>
+<li>在推荐结果中强插新笔记。</li>
+<li>对新笔记的排序分数做提权（boost）。</li>
+<li>通过提权，对新笔记做保量。</li>
+<li>差异化保量。</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225112523.png" alt="" /></p>
+<h3 id="新笔记提权"><a class="header" href="#新笔记提权">新笔记提权</a></h3>
+<p>目标：让新笔记有更多机会曝光。</p>
+<p>如果做自然分发，24小时新笔记占比为 1/30。做人为干涉，让新笔记占比大幅提升。</p>
+<p>干涉粗排、重排环节，给新笔记提权（方法是给新笔记分数乘以一个大于1的常数，然后和老笔记自由竞争）。</p>
+<p>优点：容易实现，投入产出比好。</p>
+<p>缺点：</p>
+<ul>
+<li>曝光量对提权系数很敏感。</li>
+<li>很难精确控制曝光量，容易过度曝光和不充分曝光。</li>
+</ul>
+<h3 id="新笔记保量"><a class="header" href="#新笔记保量">新笔记保量</a></h3>
+<p>保量：无论笔记质量高低，都保证24小时获得100次曝光。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225112746.png" alt="" /></p>
+<p><strong>动态提权保量</strong></p>
+<p>用下面四个值计算提权系数</p>
+<ul>
+<li>目标时间：比如24小时。</li>
+<li>目标曝光：比如100次。</li>
+<li>发布时间：比如笔记已经发布12小时。</li>
+<li>已有曝光：比如笔记已经获得20次曝光。</li>
+</ul>
+<p><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord cjk_fallback">提权系数</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.2173em;vertical-align:-0.345em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8723em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord cjk_fallback mtight">目标时间</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord cjk_fallback mtight">发布时间</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8723em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord cjk_fallback mtight">目标曝光</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord cjk_fallback mtight">已有曝光</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mopen">(</span><span class="mord">0.5</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">0.2</span><span class="mclose">)</span></span></span></span></p>
+<p><strong>保量的难点</strong></p>
+<p>保量成功率远低于 100%。很多笔记在24小时达不到100次曝光。原因：</p>
+<ul>
+<li>召回、排序存在不足。</li>
+<li>提权系数调得不好。</li>
+</ul>
+<p>线上环境变化会导致保量失败。</p>
+<ul>
+<li>线上环境变化：新增召回通道、升级排序模型、改变重排打散规则····</li>
+<li>线上环境变化后，需要调整提权系数。</li>
+</ul>
+<p><strong>思考题</strong></p>
+<p>给所有新笔记一个很大的提权系数（比如4倍）直到达成 100 次曝光为止。这样的保量成功率很高。</p>
+<p>为什么不用这种方法呢？效果不好！</p>
+<p>给新笔记分数 boost 越多，对新笔记越有利？</p>
+<p>好处：分数提升越多，曝光次数越多。</p>
+<p>坏处：把笔记推荐给不太合适的受众。</p>
+<ul>
+<li>点击率、点赞率等指标会偏低。</li>
+<li>长期会受推荐系统打压，难以成长为热门笔记。</li>
+</ul>
+<h2 id="差异化保量"><a class="header" href="#差异化保量">差异化保量</a></h2>
+<p>保量：不论新笔记质量高低，都做扶持，在前24小时给100次曝光。</p>
+<p>差异化保量：不同笔记有不同保量目标，普通笔记保100次曝光，内容优质的笔记保100~500次曝光。</p>
+<ul>
+<li>基础保量：24小时100 次曝光。</li>
+<li>内容质量：用模型评价内容质量高低，给予额外保量目标，上限是加200次曝光。</li>
+<li>作者质量：根据作者历史上的笔记质量，给予额外保量目标，上限是加200次曝光。</li>
+<li>一篇笔记最少有100次保量，最多有500次保量。</li>
+</ul>
+<h2 id="总结-1"><a class="header" href="#总结-1">总结</a></h2>
+<p>流量调控：流量怎么在新老笔记之间分配。</p>
+<p>扶持新笔记：单独的召回通道、在排序阶段提权。</p>
+<p>保量：帮助新笔记在前 24小时获得100 次曝光。</p>
+<p>差异化保量：根据内容质量、作者质量，决定保量目标。</p>
+<h1 id="冷启的ab测试"><a class="header" href="#冷启的ab测试">冷启的AB测试</a></h1>
+<p>这节课的内容是物品冷启动的AB测试，内容很烧脑，不建议初学者观看。推荐系统常用的AB测试只考察用户侧消费指标，而推荐系统的AB测试还需要额外考察作者侧发布指标。后者远比前者复杂，而且所有已知的实验方案都存在缺陷。</p>
+<h2 id="新笔记冷启的ab测试"><a class="header" href="#新笔记冷启的ab测试">新笔记冷启的AB测试</a></h2>
+<p>作者侧指标：发布渗透率、人均发布量。</p>
+<p>用户侧指标：对新笔记的点击率、交互率。大盘指标：消费时长、日活、月活</p>
+<p>标准的AB测试通常指管制大盘指标：消费时长、日活、月活。实验比较好做。</p>
+<h2 id="用户侧实验"><a class="header" href="#用户侧实验">用户侧实验</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225113623.png" alt="" /></p>
+<p>缺点</p>
+<ul>
+<li>限定：保量100次曝光。</li>
+<li>假设：新笔记曝光越多，用户使用APP时长越低。</li>
+<li>新策略：把新笔记排序时的权重增大两倍。</li>
+<li>结果（只看用户消费指标）：AB测试的diff是负数（实验组不如对照组）。如果推全，diff会缩小（比如一2%→一1%）。</li>
+</ul>
+<h2 id="作者侧实验"><a class="header" href="#作者侧实验">作者侧实验</a></h2>
+<h3 id="方案一"><a class="header" href="#方案一">方案一</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225113758.png" alt="" /></p>
+<p>方案一缺点：新笔记之间会抢流量</p>
+<p>设定：</p>
+<ul>
+<li>新老笔记走各自队列，没有竞争。</li>
+<li>重排分给新笔记1/3流量，分给老笔记 2/3流量</li>
+</ul>
+<p>新策略：把新笔记的权重增大两倍。</p>
+<p>结果（只看作者发布指标）：AB 测试的 diff 是正数（实验组优于对照组）。如果推全，diff 会消失（比如 2% →0）。</p>
+<p>方案一缺点：新笔记和老笔记抢流量</p>
+<p>设定：新老笔记自由竞争。</p>
+<p>新策略：把新笔记排序时的权重增大两倍。</p>
+<p>AB测试时，50% 新笔记（带策略）跟100%老笔记抢流量。</p>
+<p>推全后，100%新笔记（带策略）跟100%老笔记抢流量。</p>
+<p>AB 测试结果与推全结果有差异。</p>
+<h3 id="方案二"><a class="header" href="#方案二">方案二</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250225114043.png" alt="" /></p>
+<p>方案二比方案一的优缺点</p>
+<p>优点：新笔记的两个桶不抢流量，实验结果更可信。</p>
+<p>相同：新笔记和老笔记抢流量，AB 测试结果与推全结果有差异。</p>
+<p>缺点：新笔记池减小一半，对用户体验造成负面影响。</p>
+<h3 id="方案三把老笔记也分为实验组和对照组"><a class="header" href="#方案三把老笔记也分为实验组和对照组">方案三：把老笔记也分为实验组和对照组</a></h3>
+<p>缺点：这种方式相当于把一个APP拆分为两个APP，不划算</p>
+<h2 id="总结-2"><a class="header" href="#总结-2">总结</a></h2>
+<p>冷启的AB测试需要观测作者发布指标和用户消费指标。</p>
+<p>各种AB测试的方案都有缺点。（小红书有更好的方案，但也不完美。）</p>
+<p>设计方案的时候，问自己几个问题：</p>
+<ul>
+<li>实验组、对照组新笔记会不会抢流量？</li>
+<li>新笔记、老笔记怎么抢流量？</li>
+<li>同时隔离笔记、用户，会不会让内容池变小？</li>
+<li>如果对新笔记做保量，会发生什么？</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../工业界真实的信息流推荐系统/重排.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../工业界真实的信息流推荐系统/涨指标的方法.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../工业界真实的信息流推荐系统/重排.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../工业界真实的信息流推荐系统/涨指标的方法.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

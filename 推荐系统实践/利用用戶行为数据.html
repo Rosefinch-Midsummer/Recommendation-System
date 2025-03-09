@@ -1,0 +1,386 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>利用用户行为数据 - 推荐系统</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">推荐系统</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="利用用戶行为数据"><a class="header" href="#利用用戶行为数据">利用用戶行为数据</a></h1>
+<ul>
+<li><a href="#%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E6%95%B0%E6%8D%AE%E7%AE%80%E4%BB%8B">用户行为数据简介</a></li>
+<li><a href="#%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90">用户行为分析</a>
+<ul>
+<li><a href="#%E7%94%A8%E6%88%B7%E6%B4%BB%E8%B7%83%E5%BA%A6%E5%92%8C%E7%89%A9%E5%93%81%E6%B5%81%E8%A1%8C%E5%BA%A6%E7%9A%84%E5%88%86%E5%B8%83">用户活跃度和物品流行度的分布</a></li>
+<li><a href="#%E7%94%A8%E6%88%B7%E6%B4%BB%E8%B7%83%E5%BA%A6%E5%92%8C%E7%89%A9%E5%93%81%E6%B5%81%E8%A1%8C%E5%BA%A6%E7%9A%84%E5%85%B3%E7%B3%BB">用户活跃度和物品流行度的关系</a></li>
+</ul>
+</li>
+<li><a href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E8%AE%A1%E5%92%8C%E7%AE%97%E6%B3%95%E8%AF%84%E6%B5%8B">实验设计和算法评测</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E9%82%BB%E5%9F%9F%E7%9A%84%E7%AE%97%E6%B3%95">基于邻域的算法</a>
+<ul>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E7%94%A8%E6%88%B7%E7%9A%84%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E7%AE%97%E6%B3%95">基于用户的协同过滤算法</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E7%89%A9%E5%93%81%E7%9A%84%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E7%AE%97%E6%B3%95">基于物品的协同过滤算法</a></li>
+<li><a href="#usercf%E5%92%8Citemcf%E7%9A%84%E7%BB%BC%E5%90%88%E6%AF%94%E8%BE%83">UserCF和ItemCF的综合比较</a></li>
+</ul>
+</li>
+<li><a href="#%E9%9A%90%E8%AF%AD%E4%B9%89%E6%A8%A1%E5%9E%8B">隐语义模型</a>
+<ul>
+<li><a href="#%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95">基础算法</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8Elfm%E7%9A%84%E5%AE%9E%E9%99%85%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BE%8B%E5%AD%90">基于LFM的实际系统的例子</a></li>
+<li><a href="#lfm%E5%92%8C%E5%9F%BA%E4%BA%8E%E9%82%BB%E5%9F%9F%E7%9A%84%E6%96%B9%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83">LFM和基于邻域的方法的比较</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E5%9B%BE%E7%9A%84%E6%A8%A1%E5%9E%8B">基于图的模型</a>
+<ul>
+<li><a href="#%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BA%8C%E5%88%86%E5%9B%BE%E8%A1%A8%E7%A4%BA">用户行为数据的二分图表示</a></li>
+<li><a href="#%E5%9F%BA%E4%BA%8E%E5%9B%BE%E7%9A%84%E6%8E%A8%E8%8D%90%E7%AE%97%E6%B3%95">基于图的推荐算法</a></li>
+</ul>
+</li>
+</ul>
+<p>基于用户行为分析的推荐算法是个性化推荐系统的重要算法，学术界一般将这种类型的算法称为协同过滤算法。顾名思义，协同过滤就是指用户可以齐心协力，通过不断地和网站互动，使自己的推荐列表能够不断过滤掉自己不感兴趣的物品，从而越来越满足自己的需求。</p>
+<h2 id="用户行为数据简介"><a class="header" href="#用户行为数据简介">用户行为数据简介</a></h2>
+<p>本章提到的个性化推荐算法都是基于用户行为数据分析设计的，因此本节将首先介绍用户行为数据。</p>
+<p>用户行为数据在网站上最简单的存在形式就是日志。网站在运行过程中都产生大量原始日志（raw log），并将其存储在文件系统中。很多互联网业务会把多种原始日志按照用户行为汇总成会话日志（session log），其中每个会话表示一次用户行为和对应的服务。比如，在搜索引擎和搜索广告系统中，服务会为每次查询生成一个展示日志（impression  log），其中记录了查询和返回结果。如果用户点击了某个结果，这个点击信息会被服务器截获并存储在点击日志（click log）中。一个并行程序会周期性地归并展示日志和点击日志，得到的会话日志中每个消息是一个用户提交的查询、得到的结果以及点击。类似地，推荐系统和电子商务网站也会汇总原始日志生成描述用户行为的会话日志。会话日志通常存储在分布式数据仓库中，如支持离线分析的 Hadoop Hive和支持在线分析的Google  Dremel。这些日志记录了用户的各种行为，如在电子商务网站中这些行为主要包括网页浏览、购买、点击、评分和评论等。</p>
+<p>用户行为在个性化推荐系统中一般分两种——显性反馈行为（explicit feedback）和隐性反馈行为（implicit feedback）。显性反馈行为包括用户明确表示对物品喜好的行为。图2-2显示了不同网站收集显性反馈的方式。可以看到，这里的主要方式就是评分和喜欢/不喜欢。很多网站都使用了5分的评分系统来让用户直接表达对物品的喜好，但也有些网站使用简单的“喜欢”或者“不喜欢”按钮收集用户的兴趣。这些不同的显性反馈方式各有利弊。YouTube最早是用5分评分系统收集显性反馈的，但后来他们的研究人员统计了不同评分的评分数，结果发现，用户最常用的评分是5分，其次是1分，其他的分数很少有用户打。因此，后来YouTube就把评分系统改成了两档评分系统（喜欢/不喜欢）。当然，我们举这个例子并不是试图说明一种评分系统比另一种好，而是要说明不同的网站需要根据自己的特点设计评分系统，而不是一味照搬其他网站的设计。YouTube的用户主要将精力放在看视频上，因此他们只有在特别不满或者特别满意时才会评分，因此二级评分系统就足够了。但如果是评论网站，用户主要将精力放在评论上，这时多级评分系统就是必要的。</p>
+<p>和显性反馈行为相对应的是隐性反馈行为。隐性反馈行为指的是那些不能明确反应用户喜好的行为。最具代表性的隐性反馈行为就是页面浏览行为。用户浏览一个物品的页面并不代表用户一定喜欢这个页面展示的物品，比如可能因为这个页面链接显示在首页，用户更容易点击它而已。相比显性反馈，隐性反馈虽然不明确，但数据量更大。在很多网站中，很多用户甚至只有隐性反馈数据，而没有显性反馈数据。表2-1从几个不同方面比较了显性反馈数据和隐性反馈数据。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250203095510.png" alt="" /></p>
+<p>按照反馈的明确性分，用户行为数据可以分为显性反馈和隐性反馈，但按照反馈的方向分，又可以分为正反馈和负反馈。正反馈指用户的行为倾向于指用户喜欢该物品，而负反馈指用户的行为倾向于指用户不喜欢该物品。在显性反馈中，很容易区分一个用户行为是正反馈还是负反馈，而在隐性反馈行为中，就相对比较难以确定。</p>
+<p>为了更好地说明什么数据是显性反馈数据，什么是隐性反馈数据，表2-2列举了各个领域的网站中这两种行为的例子。</p>
+<p>表2-2  各代表网站中显性反馈数据和隐性反馈数据的例子</p>
+<div class="table-wrapper"><table><thead><tr><th>网站类型</th><th>显性反馈</th><th>隐性反馈</th></tr></thead><tbody>
+<tr><td>视频网站</td><td>用户对视频的评分</td><td>用户观看视频的日志、浏览视频页面的日志</td></tr>
+<tr><td>电子商务网站</td><td>用户对商品的评分</td><td>购买日志、浏览日志</td></tr>
+<tr><td>门户网站</td><td>用户对新闻的评分</td><td>阅读新闻的日志</td></tr>
+<tr><td>音乐网站</td><td>用户对音乐/歌手/专辑的评分</td><td>听歌的日志</td></tr>
+</tbody></table>
+</div>
+<p>互联网中的用户行为有很多种，比如浏览网页、购买商品、评论、评分等。要用一个统一的方式表示所有这些行为是比较困难的。表2-3给出了一种表示方式，它将一个用户行为表示为6部分，即产生行为的用户和行为的对象、行为的种类、产生行为的上下文、行为的内容和权重。</p>
+<p>表2-3  用户行为的统一表示</p>
+<div class="table-wrapper"><table><thead><tr><th>表示</th><th>含义</th></tr></thead><tbody>
+<tr><td>user id</td><td>产生行为的用户的唯一标识</td></tr>
+<tr><td>item id</td><td>产生行为的对象的唯一标识</td></tr>
+<tr><td>behavior type</td><td>行为的种类（比如是购买还是浏览）</td></tr>
+<tr><td>context</td><td>产生行为的上下文，包括时间和地点等</td></tr>
+<tr><td>behavior weight</td><td>行为的权重（如果是观看视频的行为，那么这个权重可以是观看时长；如果是打分行为，这个权重可以是分数）</td></tr>
+<tr><td>behavior content</td><td>行为的内容（如果是评论行为，那么就是评论的文本；如果是打标签的行为，就是标签）</td></tr>
+</tbody></table>
+</div>
+<p>当然，在很多时候我们并不使用统一结构表示所有行为，而是针对不同的行为给出不同表示。而且，有些时候可能会忽略一些信息（比如上下文）。当然，有些信息是不能忽略的，比如产生行为的用户和行为的对象就是所有行为都必须包含的。一般来说，不同的数据集包含不同的行为，目前比较有代表性的数据集有下面几个。</p>
+<p>无上下文信息的隐性反馈数据集  每一条行为记录仅仅包含用户ID和物品ID。Book-Crossing就是这种类型的数据集。</p>
+<p>无上下文信息的显性反馈数据集  每一条记录包含用户ID、物品ID和用户对物品的评分。</p>
+<p>有上下文信息的隐性反馈数据集  每一条记录包含用户ID、物品ID和用户对物品产生行为的时间戳。Lastfm数据集就是这种类型的数据集。</p>
+<p>有上下文信息的显性反馈数据集  每一条记录包含用户ID、物品ID、用户对物品的评分和评分行为发生的时间戳。Netflix Prize提供的就是这种类型的数据集。</p>
+<p>本章使用的数据集基本都是第一种数据集，即无上下文信息的隐性反馈数据集。</p>
+<h2 id="用户行为分析"><a class="header" href="#用户行为分析">用户行为分析</a></h2>
+<p>在利用用户行为数据设计推荐算法之前，研究人员首先需要对用户行为数据进行分析，了解数据中蕴含的一般规律，这样才能对算法的设计起到指导作用。本节将介绍用户行为数据中蕴含的一般规律，这些规律并不是只存在于一两个网站中的特例，而是存在于很多网站中的普遍规律。</p>
+<h3 id="用户活跃度和物品流行度的分布"><a class="header" href="#用户活跃度和物品流行度的分布">用户活跃度和物品流行度的分布</a></h3>
+<p>很多关于互联网数据的研究发现，互联网上的很多数据分布都满足一种称为Power Law的分布，这个分布在互联网领域也称长尾分布。</p>
+<p>长尾分布其实很早就被统计学家注意到了。1932年，哈佛大学的语言学家Zipf在研究英文单词的词频时发现，如果将单词出现的频率按照由高到低排列，则每个单词出现的频率和它在热门排行榜中排名的常数次幂成反比。这个分布称为Zipf定律。这个现象表明，在英文中大部分词的词频其实很低，只有很少的词被经常使用。</p>
+<p>很多研究人员发现，用户行为数据也蕴含着这种规律。</p>
+<p>这两幅图都是双对数曲线，而长尾分布在双对数曲线上应该呈直线。这两幅图中的曲线都呈近似直线的形状，从而证明不管是物品的流行度还是用户的活跃度，都近似于长尾分布，特别是物品流行度的双对数曲线，非常接近直线。</p>
+<h3 id="用户活跃度和物品流行度的关系"><a class="header" href="#用户活跃度和物品流行度的关系">用户活跃度和物品流行度的关系</a></h3>
+<p>一般来说，不活跃的用户要么是新用户，要么是只来过网站一两次的老用户。那么，不同活跃度的用户喜欢的物品的流行度是否有差别？一般认为，新用户倾向于浏览热门的物品，因为他们对网站还不熟悉，只能点击首页的热门物品，而老用户会逐渐开始浏览冷门的物品。</p>
+<p>仅仅基于用户行为数据设计的推荐算法一般称为协同过滤算法。学术界对协同过滤算法进行了深入研究，提出了很多方法，比如基于邻域的方法（neighborhood-based）、隐语义模型（latent factor model）、基于图的随机游走算法（random walk on graph）等。在这些方法中，最著名的、在业界得到最广泛应用的算法是基于邻域的方法，而基于邻域的方法主要包含下面两种算法。</p>
+<p>基于用户的协同过滤算法  这种算法给用户推荐和他兴趣相似的其他用户喜欢的物品。</p>
+<p>基于物品的协同过滤算法  这种算法给用户推荐和他之前喜欢的物品相似的物品。</p>
+<p>下面几节将首先介绍上面两种算法，然后再简单介绍隐语义模型和基于图的模型。</p>
+<h2 id="实验设计和算法评测"><a class="header" href="#实验设计和算法评测">实验设计和算法评测</a></h2>
+<p>前文说过，评测推荐系统有3种方法——离线实验、用户调查和在线实验。本节将通过离线实验方法评测提到的算法。首先介绍用到的数据集，然后介绍采用的实验方法和评测指标。</p>
+<h2 id="基于邻域的算法"><a class="header" href="#基于邻域的算法">基于邻域的算法</a></h2>
+<p>基于邻域的算法是推荐系统中最基本的算法，该算法不仅在学术界得到了深入研究，而且在业界得到了广泛应用。基于邻域的算法分为两大类，一类是基于用户的协同过滤算法，另一类是基于物品的协同过滤算法。下面几节将对这两种算法进行深入介绍，对比它们的优缺点并提出改进方案。</p>
+<h3 id="基于用户的协同过滤算法"><a class="header" href="#基于用户的协同过滤算法">基于用户的协同过滤算法</a></h3>
+<p>基于用户的协同过滤算法是推荐系统中最古老的算法。可以不夸张地说，这个算法的诞生标志了推荐系统的诞生。该算法在1992年被提出，并应用于邮件过滤系统，1994年被GroupLens用于新闻过滤。在此之后直到2000年，该算法都是推荐系统领域最著名的算法。本节将对该算法进行详细介绍，首先介绍最基础的算法，然后在此基础上提出不同的改进方法，并通过真实的数据集进行评测。</p>
+<ol>
+<li>基础算法</li>
+</ol>
+<p>每年新学期开始，刚进实验室的师弟总会问师兄相似的问题，比如“我应该买什么专业书啊”、“我应该看什么论文啊”等。这个时候，师兄一般会给他们做出一些推荐。这就是现实中个性化推荐的一种例子。在这个例子中，师弟可能会请教很多师兄，然后做出最终的判断。师弟之所以请教师兄，一方面是因为他们有社会关系，互相认识且信任对方，但更主要的原因是师兄和师弟有共同的研究领域和兴趣。那么，在一个在线个性化推荐系统中，当一个用户A需要个性化推荐时，可以先找到和他有相似兴趣的其他用户，然后把那些用户喜欢的、而用户A没有听说过的物品推荐给A。这种方法称为基于用户的协同过滤算法。从上面的描述中可以看到，基于用户的协同过滤算法主要包括两个步骤。</p>
+<p>(1) 找到和目标用户兴趣相似的用户集合。</p>
+<p>(2) 找到这个集合中的用户喜欢的，且目标用户没有听说过的物品推荐给目标用户。</p>
+<h3 id="基于物品的协同过滤算法"><a class="header" href="#基于物品的协同过滤算法">基于物品的协同过滤算法</a></h3>
+<p>基于物品的协同过滤（item-based  collaborative  filtering）算法是目前业界应用最多的算法。无论是亚马逊网，还是Netflix、Hulu、YouTube，其推荐算法的基础都是该算法。本节将从基础的算法开始介绍，然后提出算法的改进方法，并通过实际数据集评测该算法。</p>
+<ol>
+<li>基础算法</li>
+</ol>
+<p>基于用户的协同过滤算法在一些网站（如Digg）中得到了应用，但该算法有一些缺点。首先，随着网站的用户数目越来越大，计算用户兴趣相似度矩阵将越来越困难，其运算时间复杂度和空间复杂度的增长和用户数的增长近似于平方关系。其次，基于用户的协同过滤很难对推荐结果作出解释。因此，著名的电子商务公司亚马逊提出了另一个算法——基于物品的协同过滤算法。</p>
+<p>基于物品的协同过滤算法（简称ItemCF）给用户推荐那些和他们之前喜欢的物品相似的物品。比如，该算法会因为你购买过《数据挖掘导论》而给你推荐《机器学习》。不过，ItemCF算法并不利用物品的内容属性计算物品之间的相似度，它主要通过分析用户的行为记录计算物品之间的相似度。该算法认为，物品A和物品B具有很大的相似度是因为喜欢物品A的用户大都也喜欢物品B。</p>
+<p>基于物品的协同过滤算法主要分为两步。</p>
+<p>(1) 计算物品之间的相似度。</p>
+<p>(2) 根据物品的相似度和用户的历史行为给用户生成推荐列表。</p>
+<h3 id="usercf和itemcf的综合比较"><a class="header" href="#usercf和itemcf的综合比较">UserCF和ItemCF的综合比较</a></h3>
+<p>UserCF是推荐系统领域较为古老的算法，1992年就已经在电子邮件的个性化推荐系统Tap estry中得到了应用，1994年被GroupLens用来实现新闻的个性化推荐，后来被著名的文章分享网站Digg用来给用户推荐个性化的网络文章。ItemCF则是相对比较新的算法，在著名的电子商务网站亚马逊和DVD租赁网站Netflix中得到了广泛应用。</p>
+<p>那么，为什么Digg使用UserCF，而亚马逊网使用ItemCF呢？</p>
+<p>首先回顾一下UserCF算法和ItemCF算法的推荐原理。UserCF给用户推荐那些和他有共同兴趣爱好的用户喜欢的物品，而ItemCF给用户推荐那些和他之前喜欢的物品类似的物品。从这个算法的原理可以看到，UserCF的推荐结果着重于反映和用户兴趣相似的小群体的热点，而ItemCF的推荐结果着重于维系用户的历史兴趣。换句话说，UserCF的推荐更社会化，反映了用户所在的小型兴趣群体中物品的热门程度，而ItemCF的推荐更加个性化，反映了用户自己的兴趣传承。</p>
+<p>在新闻网站中，用户的兴趣不是特别细化，绝大多数用户都喜欢看热门的新闻。即使是个性化，也是比较粗粒度的，比如有些用户喜欢体育新闻，有些喜欢社会新闻，而特别细粒度的个性化一般是不存在的。比方说，很少有用户只看某个话题的新闻，主要是因为这个话题不可能保证每天都有新的消息，而这个用户却是每天都要看新闻的。因此，个性化新闻推荐更加强调抓住新闻热点，热门程度和时效性是个性化新闻推荐的重点，而个性化相对于这两点略显次要。因此，UserCF可以给用户推荐和他有相似爱好的一群其他用户今天都在看的新闻，这样在抓住热点和时效性的同时，保证了一定程度的个性化。这是Digg在新闻推荐中使用UserCF的最重要原因。</p>
+<p>UserCF适合用于新闻推荐的另一个原因是从技术角度考量的。因为作为一种物品，新闻的更新非常快，每时每刻都有新内容出现，而ItemCF需要维护一张物品相关度的表，如果物品更新很快，那么这张表也需要很快更新，这在技术上很难实现。绝大多数物品相关度表都只能做到一天一次更新，这在新闻领域是不可以接受的。而UserCF只需要用户相似性表，虽然UserCF对于新用户也需要更新相似度表，但在新闻网站中，物品的更新速度远远快于新用户的加入速度，而且对于新用户，完全可以给他推荐最热门的新闻，因此UserCF显然是利大于弊。</p>
+<p>但是，在图书、电子商务和电影网站，比如亚马逊、豆瓣、Netflix中，ItemCF则能极大地发挥优势。首先，在这些网站中，用户的兴趣是比较固定和持久的。一个技术人员可能都是在购买技术方面的书，而且他们对书的热门程度并不是那么敏感，事实上越是资深的技术人员，他们看的书就越可能不热门。此外，这些系统中的用户大都不太需要流行度来辅助他们判断一个物品的好坏，而是可以通过自己熟悉领域的知识自己判断物品的质量。因此，这些网站中个性化推荐的任务是帮助用户发现和他研究领域相关的物品。因此，ItemCF算法成为了这些网站的首选算法。此外，这些网站的物品更新速度不会特别快，一天一次更新物品相似度矩阵对它们来说不会造成太大的损失，是可以接受的。</p>
+<p>同时，从技术上考虑，UserCF需要维护一个用户相似度的矩阵，而ItemCF需要维护一个物品相似度矩阵。从存储的角度说，如果用户很多，那么维护用户兴趣相似度矩阵需要很大的空间，同理，如果物品很多，那么维护物品相似度矩阵代价较大。</p>
+<p>在早期的研究中，大部分研究人员都是让少量的用户对大量的物品进行评价，然后研究用户兴趣的模式。那么，对于他们来说，因为用户很少，计算用户兴趣相似度是最快也是最简单的方法。但在实际的互联网中，用户数目往往非常庞大，而在图书、电子商务网站中，物品的数目则是比较少的。此外，物品的相似度相对于用户的兴趣一般比较稳定，因此使用ItemCF是比较好的选择。当然，新闻网站是个例外，在那儿，物品的相似度变化很快，物品数目庞大，相反用户兴趣则相对固定（都是喜欢看热门的），所以新闻网站的个性化推荐使用UserCF算法的更多。</p>
+<p>表2-11从不同的角度对比了UserCF和ItemCF算法。同时，我们也将前面几节的离线实验结果展示在图2-13、图2-14和图2-15中。从图中可见，ItemCF算法在各项指标上似乎都不如UserCF，特别是其推荐结果的覆盖率和新颖度都低于UserCF，这一点似乎和我们之前讨论的不太符合。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250203113104.png" alt="" /></p>
+<p>首先要指出的是，离线实验的性能在选择推荐算法时并不起决定作用。首先应该满足产品的需求，比如如果需要提供推荐解释，那么可能得选择ItemCF算法。其次，需要看实现代价，比如若用户太多，很难计算用户相似度矩阵，这个时候可能不得不抛弃UserCF算法。最后，离线指标和点击率等在线指标不一定成正比。而且，这里对比的是最原始的UserCF和ItemCF算法，这两种算法都可以进行各种各样的改进。一般来说，这两种算法经过优化后，最终得到的离线性能是近似的。</p>
+<p>下一节将分析为什么原始ItemCF算法的覆盖率和新颖度都不高。</p>
+<p>上面的问题换句话说就是，两个不同领域的最热门物品之间往往具有比较高的相似度。这个时候，仅仅靠用户行为数据是不能解决这个问题的，因为用户的行为表示这种物品之间应该相似度很高。此时，我们只能依靠引入物品的内容数据解决这个问题，比如对不同领域的物品降低权重等。这些就不是协同过滤讨论的范畴了。</p>
+<h2 id="隐语义模型"><a class="header" href="#隐语义模型">隐语义模型</a></h2>
+<p>自从Netflix Prize比赛举办以来，LFM（latent factor model）隐语义模型逐渐成为推荐系统领域耳熟能详的名词。其实该算法最早在文本挖掘领域被提出，用于找到文本的隐含语义。相关的名词有LSI、pLSA、LDA和Topic Model。本节将对隐含语义模型在Top -N推荐中的应用进行详细介绍，并通过实际的数据评测该模型。</p>
+<h3 id="基础算法"><a class="header" href="#基础算法">基础算法</a></h3>
+<p>隐语义模型是最近几年推荐系统领域最为热门的研究话题，它的核心思想是通过隐含特征(latent factor)联系用户兴趣和物品。</p>
+<p>首先通过一个例子来理解一下这个模型。图2-16展示了两个用户在豆瓣的读书列表。</p>
+<p>从他们的阅读列表可以看出，用户A的兴趣涉及侦探小说、科普图书以及一些计算机技术书，而用户B的兴趣比较集中在数学和机器学习方面。</p>
+<p>那么如何给A和B推荐图书呢？</p>
+<p>对于UserCF，首先需要找到和他们看了同样书的其他用户（兴趣相似的用户），然后给他们推荐那些用户喜欢的其他书。</p>
+<p>对于ItemCF，需要给他们推荐和他们已经看的书相似的书，比如作者B看了很多关于数据挖掘的书，可以给他推荐机器学习或者模式识别方面的书。</p>
+<p>还有一种方法，可以对书和物品的兴趣进行分类。对于某个用户，首先得到他的兴趣分类，然后从分类中挑选他可能喜欢的物品。</p>
+<p>总结一下，这个基于兴趣分类的方法大概需要解决3个问题。</p>
+<p>如何给物品进行分类？</p>
+<p>如何确定用户对哪些类的物品感兴趣，以及感兴趣的程度？</p>
+<p>对于一个给定的类，选择哪些属于这个类的物品推荐给用户，以及如何确定这些物品在一个类中的权重？</p>
+<p>对于第一个问题的简单解决方案是找编辑给物品分类。以图书为例，每本书出版时，编辑都会给书一个分类。为了给图书分类，出版界普遍遵循中国图书分类法。但是，即使有很系统的分类体系，编辑给出的分类仍然具有以下缺点。</p>
+<p>编辑的意见不能代表各种用户的意见。比如，对于《具体数学》应该属于什么分类，有人认为应该属于数学，有些人认为应该属于计算机。从内容看，这本书是关于数学的，但从用户看，这本书的读大部分是做计算机出身的。编辑的分类大部分是从书的内容出发，而不是从书的读者群出发。</p>
+<p>编辑很难控制分类的粒度。我们知道分类是有不同粒度的，《数据挖掘导论》在粗粒度的分类中可能属于计算机技术，但在细粒度的分类中可能属于数据挖掘。对于不同的用户，我们可能需要不同的粒度。比如对于一位初学者，我们粗粒度地给他做推荐就可以了，而对于一名资深研究人员，我们就需要深入到他的很细分的领域给他做个性化推荐。</p>
+<p>编辑很难给一个物品多个分类。有的书不仅属于一个类，而是可能属于很多的类。</p>
+<p>编辑很难给出多维度的分类。我们知道，分类是可以有很多维度的，比如按照作者分类、按照译者分类、按照出版社分类。比如不同的用户看《具体数学》原因可能不同，有些人是因为它是数学方面的书所以才看的，而有些人是因为它是大师Knuth的著作所以才去看，因此在不同人的眼中这本书属于不同的分类。</p>
+<p>编辑很难决定一个物品在某一个分类中的权重。比如编辑可以很容易地决定《数据挖掘导论》属于数据挖掘类图书，但这本书在这类书中的定位是什么样的，编辑就很难给出一个准确的数字来表示。</p>
+<p>为了解决上面的问题，研究人员提出：为什么我们不从数据出发，自动地找到那些类，然后进行个性化推荐？于是，隐含语义分析技术（latent variable analysis）出现了。隐含语义分析技术因为采取基于用户行为统计的自动聚类，较好地解决了上面提出的5个问题。</p>
+<p>编辑的意见不能代表各种用户的意见，但隐含语义分析技术的分类来自对用户行为的统计，代表了用户对物品分类的看法。隐含语义分析技术和ItemCF在物品分类方面的思想类似，如果两个物品被很多用户同时喜欢，那么这两个物品就很有可能属于同一个类。</p>
+<p>编辑很难控制分类的粒度，但隐含语义分析技术允许我们指定最终有多少个分类，这个数字越大，分类的粒度就会越细，反正分类粒度就越粗。编辑很难给一个物品多个分类，但隐含语义分析技术会计算出物品属于每个类的权重，因此每个物品都不是硬性地被分到某一个类中。</p>
+<p>编辑很难给出多维度的分类，但隐含语义分析技术给出的每个分类都不是同一个维度的，它是基于用户的共同兴趣计算出来的，如果用户的共同兴趣是某一个维度，那么LFM给出的类也是相同的维度。</p>
+<p>编辑很难决定一个物品在某一个分类中的权重，但隐含语义分析技术可以通过统计用户行为决定物品在每个类中的权重，如果喜欢某个类的用户都会喜欢某个物品，那么这个物品在这个类中的权重就可能比较高。</p>
+<p>隐含语义分析技术从诞生到今天产生了很多著名的模型和方法，其中和该技术相关且耳熟能详的名词有pLSA、LDA、隐含类别模型（latent class model）、隐含主题模型（latent topic model）、矩阵分解（matrix  factorization）。这些技术和方法在本质上是相通的，其中很多方法都可以用于个性化推荐系统。本章将以LFM为例介绍隐含语义分析技术在推荐系统中的应用。</p>
+<p>LFM通过如下公式计算用户u对物品i的兴趣：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">Preference</span></span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">i</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.1383em;vertical-align:-0.247em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8913em;"><span style="top:-2.453em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">u</span></span></span><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:3.2666em;vertical-align:-1.4382em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8283em;"><span style="top:-1.8479em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4382em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<p>这个公式中<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>和<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>是模型的参数，其中<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>度量了用户u的兴趣和第k个隐类的关系，<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>度量了第k个隐类和物品i之间的关系。那么，下面的问题就是如何计算这两个参数。</p>
+<p>对最优化理论或者机器学习有所了解的读者，可能对如何计算这两个参数都比较清楚。这两个参数是从数据集中计算出来的。要计算这两个参数，需要一个训练集，对于每个用户u，训练集里都包含了用户u喜欢的物品和不感兴趣的物品，通过学习这个数据集，就可以获得上面的模型参数。</p>
+<p>推荐系统的用户行为分为显性反馈和隐性反馈。LFM在显性反馈数据（也就是评分数据）上解决评分预测问题并达到了很好的精度。不过本章主要讨论的是隐性反馈数据集，这种数据集的特点是只有正样本（用户喜欢什么物品），而没有负样本（用户对什么物品不感兴趣）。</p>
+<p>那么，在隐性反馈数据集上应用LFM解决To pN推荐的第一个关键问题就是如何给每个用户生成负样本。</p>
+<p>对于这个问题，Rong Pan在文章中进行了深入探讨。他对比了如下几种方法。</p>
+<p>对于一个用户，用他所有没有过行为的物品作为负样本。</p>
+<p>对于一个用户，从他没有过行为的物品中均匀采样出一些物品作为负样本。</p>
+<p>对于一个用户，从他没有过行为的物品中采样出一些物品作为负样本，但采样时，保证每个用户的正负样本数目相当。</p>
+<p>对于一个用户，从他没有过行为的物品中采样出一些物品作为负样本，但采样时，偏重采样不热门的物品。</p>
+<p>对于第一种方法，它的明显缺点是负样本太多，正负样本数目相差悬殊，因而计算复杂度很高，最终结果的精度也很差。对于另外3种方法，Rong  Pan在文章中表示第三种好于第二种，而第二种好于第四种。</p>
+<p>后来，通过2011年的KDD Cup的Yahoo! Music推荐系统比赛，我们发现对负样本采样时应该遵循以下原则。</p>
+<p>对每个用户，要保证正负样本的平衡（数目相似）。</p>
+<p>对每个用户采样负样本时，要选取那些很热门，而用户却没有行为的物品。</p>
+<p>一般认为，很热门而用户却没有行为更加代表用户对这个物品不感兴趣。因为对于冷门的物品，用户可能是压根没在网站中发现这个物品，所以谈不上是否感兴趣。</p>
+<h3 id="基于lfm的实际系统的例子"><a class="header" href="#基于lfm的实际系统的例子">基于LFM的实际系统的例子</a></h3>
+<p>雅虎的研究人员公布过一个使用LFM进行雅虎首页个性化设计的方案。本节将简单介绍他们的设计并讨论他们的设计方案。</p>
+<h3 id="lfm和基于邻域的方法的比较"><a class="header" href="#lfm和基于邻域的方法的比较">LFM和基于邻域的方法的比较</a></h3>
+<p>LFM是一种基于机器学习的方法，具有比较好的理论基础。这个方法和基于邻域的方法（比如UserCF、ItemCF）相比，各有优缺点。下面将从不同的方面对比LFM和基于邻域的方法。</p>
+<p>理论基础  LFM具有比较好的理论基础，它是一种学习方法，通过优化一个设定的指标建立最优的模型。基于邻域的方法更多的是一种基于统计的方法，并没有学习过程。</p>
+<p>离线计算的空间复杂度   基于邻域的方法需要维护一张离线的相关表。在离线计算相关表的过程中，如果用户/物品数很多，将会占据很大的内存。假设有M个用户和N个物品，在计算相关表的过程中，我们可能会获得一张比较稠密的临时相关表（尽管最终我们对每个物品只保留K个最相关的物品，但在中间计算过程中稠密的相关表是不可避免的），那么假设是用户相关表，则需要O(M*M)的空间，而对于物品相关表，则需要O(N*N)的空间。而LFM在建模过程中，如果是F个隐类，那么它需要的存储空间是O(F*(M+N))，这在M和N很大时可以很好地节省离线计算的内存。在Netflix  Prize中，因为用户数很庞大（40多万），很少有人使用UserCF算法（据说需要30  GB左右的内存），而LFM由于大量节省了训练过程中的内存（只需要4 GB），从而成为Netflix Prize中最流行的算法。</p>
+<p>离线计算的时间复杂度  假设有M个用户、N个物品、K条用户对物品的行为记录。那么，UserCF计算用户相关表的时间复杂度是O(N * (K/N)^2)，而ItemCF计算物品相关表的时间复杂度是O(M*(K/M)^2)。而对于LFM，如果用F个隐类，迭代S次，那么它的计算复杂度是O(K  *  F  *  S)。那么，如果K/N  &gt;  F*S，则代表UserCF的时间复杂度低于LFM，如果K/M&gt;F*S，则说明ItemCF的时间复杂度低于LFM。在一般情况下，LFM的时间复杂度要稍微高于UserCF和ItemCF，这主要是因为该算法需要多次迭代。但总体上，这两种算法在时间复杂度上没有质的差别。</p>
+<p>在线实时推荐  UserCF和ItemCF在线服务算法需要将相关表缓存在内存中，然后可以在线进行实时的预测。以ItemCF算法为例，一旦用户喜欢了新的物品，就可以通过查询内存中的相关表将和该物品相似的其他物品推荐给用户。因此，一旦用户有了新的行为，而且该行为被实时地记录到后台的数据库系统中，他的推荐列表就会发生变化。而从LFM的预测公式可以看到，LFM在给用户生成推荐列表时，需要计算用户对所有物品的兴趣权重，然后排名，返回权重最大的N个物品。那么，在物品数很多时，这一过程的时间复杂度非常高，可达O(M<em>N</em>F)。因此，LFM不太适合用于物品数非常庞大的系统，如果要用，我们也需要一个比较快的算法给用户先计算一个比较小的候选列表，然后再用LFM重新排名。另一方面，LFM在生成一个用户推荐列表时速度太慢，因此不能在线实时计算，而需要离线将所有用户的推荐结果事先计算好存储在数据库中。因此，LFM不能进行在线实时推荐，也就是说，当用户有了新的行为后，他的推荐列表不会发生变化。</p>
+<p>推荐解释  ItemCF算法支持很好的推荐解释，它可以利用用户的历史行为解释推荐结果。但LFM无法提供这样的解释，它计算出的隐类虽然在语义上确实代表了一类兴趣和物品，却很难用自然语言描述并生成解释展现给用户。</p>
+<h2 id="基于图的模型"><a class="header" href="#基于图的模型">基于图的模型</a></h2>
+<p>用户行为很容易用二分图表示，因此很多图的算法都可以用到推荐系统中。本节将重点讨论如何将用户行为用图表示，并利用图的算法给用户进行个性化推荐。</p>
+<h3 id="用户行为数据的二分图表示"><a class="header" href="#用户行为数据的二分图表示">用户行为数据的二分图表示</a></h3>
+<p>基于图的模型（graph-based model）是推荐系统中的重要内容。其实，很多研究人员把基于邻域的模型也称为基于图的模型，因为可以把基于邻域的模型看做基于图的模型的简单形式。</p>
+<h3 id="基于图的推荐算法"><a class="header" href="#基于图的推荐算法">基于图的推荐算法</a></h3>
+<p>将用户行为表示为二分图模型后，下面的任务就是在二分图上给用户进行个性化推荐。如果将个性化推荐算法放到二分图模型上，那么给用户u推荐物品的任务就可以转化为度量用户顶点vu和与vu没有边直接相连的物品节点在图上的相关性，相关性越高的物品在推荐列表中的权重就越高。度量图中两个顶点之间相关性的方法很多，但一般来说图中顶点的相关性主要取决于下面3个因素：</p>
+<p>两个顶点之间的路径数；</p>
+<p>两个顶点之间路径的长度；</p>
+<p>两个顶点之间的路径经过的顶点。</p>
+<p>而相关性高的一对顶点一般具有如下特征：</p>
+<p>两个顶点之间有很多路径相连；</p>
+<p>连接两个顶点之间的路径长度都比较短；</p>
+<p>连接两个顶点之间的路径不会经过出度比较大的顶点。</p>
+<p>基于上面3个主要因素，研究人员设计了很多计算图中顶点之间相关性的方法。本节将介绍一种基于随机游走的PersonalRank算法。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../推荐系统实践/好的推荐系统.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../推荐系统实践/推荐系统冷启动问题.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../推荐系统实践/好的推荐系统.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../推荐系统实践/推荐系统冷启动问题.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>特征交叉 - 推荐系统</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">推荐系统</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="特征交叉"><a class="header" href="#特征交叉">特征交叉</a></h1>
+<ul>
+<li><a href="#factorized-machinefm-%E5%9B%A0%E5%BC%8F%E5%88%86%E8%A7%A3%E6%9C%BA">Factorized Machine(FM) 因式分解机</a>
+<ul>
+<li><a href="#%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B">线性模型</a></li>
+<li><a href="#%E4%BA%8C%E9%98%B6%E4%BA%A4%E5%8F%89%E7%89%B9%E5%BE%81">二阶交叉特征</a></li>
+<li><a href="#%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B%E4%BA%8C%E9%98%B6%E4%BA%A4%E5%8F%89%E7%89%B9%E5%BE%81-vs-fm">线性模型+二阶交叉特征 VS FM</a></li>
+<li><a href="#factorized-machine">Factorized Machine</a></li>
+</ul>
+</li>
+<li><a href="#dcn%E6%B7%B1%E5%BA%A6%E4%BA%A4%E5%8F%89%E7%BD%91%E7%BB%9C">DCN深度交叉网络</a>
+<ul>
+<li><a href="#%E5%A4%9A%E7%9B%AE%E6%A0%87%E9%A2%84%E6%B5%8B">多目标预测</a></li>
+<li><a href="#mmoe">MMoE</a></li>
+<li><a href="#%E4%BA%A4%E5%8F%89%E5%B1%82">交叉层</a></li>
+<li><a href="#%E5%93%88%E8%BE%BE%E7%8E%9B%E4%B9%98%E7%A7%AF-hadamard-product">哈达玛乘积 (Hadamard product)</a></li>
+</ul>
+</li>
+<li><a href="#a--b-beginbmatrix15--26-37--48end">A ⊙ B =$$\begin{bmatrix}15 &amp; 26 \37 &amp; 48\end</a>
+<ul>
+<li><a href="#%E4%BA%A4%E5%8F%89%E7%BD%91%E7%BB%9C">交叉网络</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99">参考资料</a></li>
+<li><a href="#dcn">DCN</a></li>
+<li><a href="#%E5%8F%AA%E7%94%A8%E4%BA%8E%E7%B2%BE%E6%8E%92%E7%9A%84lhucppnet">只用于精排的LHUC（PPNet）</a>
+<ul>
+<li><a href="#learning-hidden-unit-contributions-lhuc">Learning Hidden Unit Contributions (LHUC)</a></li>
+<li><a href="#%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E4%B8%AD%E7%9A%84-lhuc">语音识别中的 LHUC</a></li>
+<li><a href="#%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E6%8E%92%E5%BA%8F%E6%A8%A1%E5%9E%8B%E4%B8%AD%E7%9A%84-lhuc">推荐系统排序模型中的 LHUC</a></li>
+</ul>
+</li>
+<li><a href="#senet%E5%92%8Cbilinear%E4%BA%A4%E5%8F%89">SENet和Bilinear交叉</a>
+<ul>
+<li><a href="#senet">SENet</a></li>
+<li><a href="#senet%E7%89%B9%E7%82%B9">SENet特点</a></li>
+<li><a href="#field%E9%97%B4%E7%89%B9%E5%BE%81%E4%BA%A4%E5%8F%89">Field间特征交叉</a></li>
+<li><a href="#senet%E5%92%8Cfield%E9%97%B4%E7%89%B9%E5%BE%81%E4%BA%A4%E5%8F%89">SENet和Field间特征交叉</a></li>
+<li><a href="#fibinet">FiBiNet</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="factorized-machinefm-因式分解机"><a class="header" href="#factorized-machinefm-因式分解机">Factorized Machine(FM) 因式分解机</a></h2>
+<p>线性模型对输入的特征取加权和，作为对目标的预估。如果先做特征交叉，再用线性模型，通常可以取得更好的效果。如果做二阶特征交叉，那么参数量为O(特征数量平方)，计算量大，而且容易造成过拟合。因式分解机（Factorized Machine, FM）用低秩矩阵分解的方式降低参数量，加速计算。任何可以用线性模型（比如线性回归、逻辑回归）解决的问题，都可以用 FM 解决。</p>
+<h3 id="线性模型"><a class="header" href="#线性模型">线性模型</a></h3>
+<p>线性模型有d个特征，d+1个参数，预测是特征的加权和。（只有加，没有乘。）</p>
+<h3 id="二阶交叉特征"><a class="header" href="#二阶交叉特征">二阶交叉特征</a></h3>
+<p>有d个特征，线性模型+二阶交叉特征模型有$O(d^2)$个参数。</p>
+<p>下面考虑如何减少参数数量。</p>
+<h3 id="线性模型二阶交叉特征-vs-fm"><a class="header" href="#线性模型二阶交叉特征-vs-fm">线性模型+二阶交叉特征 VS FM</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250221102045.png" alt="" /></p>
+<h3 id="factorized-machine"><a class="header" href="#factorized-machine">Factorized Machine</a></h3>
+<p>FM是线性模型的替代品，能用线性回归、逻辑回归的场景，都可以用FM。</p>
+<p>FM使用二阶交叉特征，表达能力比线性模型更强。</p>
+<p>通过做近似$u_{ij}≈ v_i^Tv_j$，FM 把二阶交叉权重的数量从$O(d^2)$降低到$O(kd)$ 。</p>
+<p>现在，FM 已过时。</p>
+<p>参考文献：
+Steffen Rendle. Factorization machines. In ICDM, 2010</p>
+<h2 id="dcn深度交叉网络"><a class="header" href="#dcn深度交叉网络">DCN深度交叉网络</a></h2>
+<p>Deep &amp; Cross Networks (DCN) 译作“深度交叉网络”，可以用于召回双塔模型、粗排三塔模型、精排模型。DCN 由一个深度网络和一个交叉网络组成，交叉网络的基本组成单元是交叉层 (Cross Layer)。这节课最重点的部分就是交叉层。</p>
+<h3 id="多目标预测"><a class="header" href="#多目标预测">多目标预测</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250305102214.png" alt="" /></p>
+<h3 id="mmoe"><a class="header" href="#mmoe">MMoE</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250305102241.png" alt="" /></p>
+<h3 id="交叉层"><a class="header" href="#交叉层">交叉层</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250221102422.png" alt="" />
+<img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250221102553.png" alt="" /></p>
+<p>类似跳跃连接（可以防止梯度消失）</p>
+<h3 id="哈达玛乘积-hadamard-product"><a class="header" href="#哈达玛乘积-hadamard-product">哈达玛乘积 (Hadamard product)</a></h3>
+<p>哈达玛乘积 (Hadamard product)，也称为 Schur 乘积或元素对应乘积 (element-wise product)，是矩阵的一种运算方式。它与标准的矩阵乘法不同。</p>
+<p><strong>定义：</strong></p>
+<p>给定两个维度相同的矩阵 A 和 B (例如，都是 m x n 的矩阵)，它们的哈达玛积 A ⊙ B 是一个同样维度的矩阵，其每个元素是由 A 和 B 相应位置的元素相乘得到的。</p>
+<p>用数学公式表示：</p>
+<h1 bmatrix="">$$(A ⊙ B)<sub>ij</sub> = A<sub>ij</sub> * B<sub>ij</sub><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord cjk_fallback">其中：</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⊙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord cjk_fallback">表示矩阵</span><span class="mord mathnormal">A</span><span class="mord cjk_fallback">和</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord cjk_fallback">的哈达玛积</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.05724em;">ij</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord cjk_fallback">表示矩阵</span><span class="mord mathnormal">A</span><span class="mord cjk_fallback">的第</span><span class="mord mathnormal">i</span><span class="mord cjk_fallback">行第</span><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mord cjk_fallback">列的元素</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7224em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.05724em;">ij</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord cjk_fallback">表示矩阵</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord cjk_fallback">的第</span><span class="mord mathnormal">i</span><span class="mord cjk_fallback">行第</span><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mord cjk_fallback">列的元素</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">∗</span><span class="mord cjk_fallback">表示普通的标量乘法</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">∗</span><span class="mord cjk_fallback">例子：</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">∗</span><span class="mord cjk_fallback">假设有两个矩阵：</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span></span></span></span></span>
+\begin{bmatrix}
+1 &amp; 2 \
+3 &amp; 4
+\end{bmatrix}
+<span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span></span></span></span></span>
+\begin{bmatrix}
+5 &amp; 6 \
+7 &amp; 8
+\end{bmatrix}
+<span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord cjk_fallback">那么它们的哈达玛积</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⊙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord cjk_fallback">为：</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⊙</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span></span></span></span></span>
+\begin{bmatrix}
+1<em>5 &amp; 2</em>6 \
+3<em>7 &amp; 4</em>8
+\end</h1>
+<p>\begin{bmatrix}
+5 &amp; 12 \
+21 &amp; 32
+\end{bmatrix}
+$$</p>
+<p><strong>与标准矩阵乘法的区别：</strong></p>
+<ul>
+<li><strong>哈达玛积：</strong> 要求参与运算的矩阵维度完全相同，结果矩阵的维度也与输入矩阵相同，每个元素是对应位置元素相乘。</li>
+<li><strong>标准矩阵乘法：</strong> 要求第一个矩阵的列数等于第二个矩阵的行数，结果矩阵的维度取决于输入矩阵的维度，元素是通过行向量和列向量的点积计算得到的。</li>
+</ul>
+<p><strong>应用：</strong></p>
+<p>哈达玛积在很多领域都有应用，包括：</p>
+<ul>
+<li><strong>图像处理：</strong>  可以用于图像的像素级操作，例如改变图像的亮度或对比度。</li>
+<li><strong>神经网络：</strong> 在某些神经网络结构中，哈达玛积被用作一种非线性操作。</li>
+<li><strong>量子信息：</strong>  在量子计算中，哈达玛矩阵的哈达玛积被用来构建更复杂的量子门。</li>
+<li><strong>推荐系统：</strong> 可以用于计算用户或物品之间的相似度。</li>
+<li><strong>信号处理：</strong> 用于信号的调制和解调。</li>
+</ul>
+<p><strong>总结：</strong></p>
+<p>哈达玛积是一种简单但非常有用的矩阵运算，它将两个维度相同的矩阵对应位置的元素相乘。理解它的定义和与标准矩阵乘法的区别对于理解其应用至关重要。</p>
+<h3 id="交叉网络"><a class="header" href="#交叉网络">交叉网络</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250221102854.png" alt="" /></p>
+<h3 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h3>
+<p>这节课介绍的是Cross Network V2[1]。</p>
+<p>老版本的 Cross Network 在论文[2] 中提出。</p>
+<p>参考文献：</p>
+<ol>
+<li>Ruoxi Wang et al. DCN V2: Improved Deep &amp; Cross Network and Practical Lessons for Web-scale Learning to Rank Systems. In WWW, 2021.</li>
+<li>Ruoxi Wang et al. Deep &amp; Cross Network for Ad Click Predictions. In ADKDD, 2017.</li>
+</ol>
+<h3 id="dcn"><a class="header" href="#dcn">DCN</a></h3>
+<p>DCN可以用于召回和排序</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250221102936.png" alt="" /></p>
+<h2 id="只用于精排的lhucppnet"><a class="header" href="#只用于精排的lhucppnet">只用于精排的LHUC（PPNet）</a></h2>
+<p>这节课介绍 LHUC 这种神经网络结构，可以用于精排。LHUC 的起源是语音识别，后来被应用到推荐系统，快手将其称为 PPNet，现在已经在业界广泛落地。</p>
+<p>视频中遗漏一个细节：将LHUC用于推荐系统，门控神经网络（2 x sigmoid）的梯度不要传递到用户ID embedding特征，需要对其做 stop gradient。</p>
+<p>参考文献：</p>
+<ol>
+<li>Pawel Swietojanski, Jinyu Li, &amp; Steve Renals. Learning hidden unit contributions for unsupervised acoustic model adaptation. IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2016.</li>
+<li>快手落地万亿参数推荐精排模型，2021。链接：https://ai.51cto.com/art/202102/644214.html</li>
+</ol>
+<h3 id="learning-hidden-unit-contributions-lhuc"><a class="header" href="#learning-hidden-unit-contributions-lhuc">Learning Hidden Unit Contributions (LHUC)</a></h3>
+<p>LHUC起源于语音识别[1]。</p>
+<p>快手将LHUC应用在推荐精排[2]，称作PPNet。</p>
+<p>参考文献：</p>
+<ol>
+<li>Pawel Swietojanski, Jinyu Li, &amp; Steve Renals. Learning hidden unit contributions for unsupervised acoustic model adaptation. IEEE/ACM Transactions on Audio, Speech, and Language Processing, 2016.</li>
+<li>快手落地万亿参数推荐精排模型，2021。链接： https:/ /ai.51cto.c0m/art/202102/644214.html</li>
+</ol>
+<h3 id="语音识别中的-lhuc"><a class="header" href="#语音识别中的-lhuc">语音识别中的 LHUC</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250221103213.png" alt="" /></p>
+<p>提取说话者个人特征</p>
+<h3 id="推荐系统排序模型中的-lhuc"><a class="header" href="#推荐系统排序模型中的-lhuc">推荐系统排序模型中的 LHUC</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250221103235.png" alt="" /></p>
+<h2 id="senet和bilinear交叉"><a class="header" href="#senet和bilinear交叉">SENet和Bilinear交叉</a></h2>
+<p>这节课介绍几种方法：</p>
+<ol>
+<li>SENet 是计算机视觉中的一种技术，可以用在推荐系统中对特征做动态加权。</li>
+<li>双线性（bilinear）特征交叉可以提升排序模型的表现。有很多种 bilinear 交叉的方法。</li>
+<li>FiBiNet 是将 SENet 与 Bilinear 模型结合。</li>
+</ol>
+<h3 id="senet"><a class="header" href="#senet">SENet</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250305103356.png" alt="" /></p>
+<p>上图中把向量都映射成k维。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250305103449.png" alt="" /></p>
+<p>参考文献：</p>
+<ol>
+<li>Jie Hu, Li Shen, and Gang Sun. Squeeze-and-Excitation Networks. In CVPR, 2018.</li>
+<li>Tongwen Huang, Zhiqi Zhang, and Junlin Zhang. FiBiNET: Combining Feature Importance and Bilinear feature Interaction for Click-Through Rate Prediction. In RecSys, 2019.</li>
+</ol>
+<h3 id="senet特点"><a class="header" href="#senet特点">SENet特点</a></h3>
+<p>SENet 对离散特征做 field-wise 加权。</p>
+<p>Field：用户 ID Embedding 是 64 维向量。64个元素算一个field，获得相同的权重。</p>
+<p>如果有m个fields，那么权重向量是m维。</p>
+<h3 id="field间特征交叉"><a class="header" href="#field间特征交叉">Field间特征交叉</a></h3>
+<p>特征交叉：内积和哈达玛乘积</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250305103706.png" alt="" /></p>
+<p>Bilinear Cross（内积）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250305103915.png" alt="" /></p>
+<p>在实践中，需要手动选择特征进行交叉，否则参数量会非常大！</p>
+<h3 id="senet和field间特征交叉"><a class="header" href="#senet和field间特征交叉">SENet和Field间特征交叉</a></h3>
+<ul>
+<li>SENet 对离散特征做 field-wise 加权</li>
+<li>Field 间特征交叉:
+<ul>
+<li>向量内积</li>
+<li>哈达玛乘积</li>
+<li>Bilinear cross</li>
+</ul>
+</li>
+</ul>
+<h3 id="fibinet"><a class="header" href="#fibinet">FiBiNet</a></h3>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250221103842.png" alt="" /></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../工业界真实的信息流推荐系统/排序.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../工业界真实的信息流推荐系统/行为序列.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../工业界真实的信息流推荐系统/排序.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../工业界真实的信息流推荐系统/行为序列.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

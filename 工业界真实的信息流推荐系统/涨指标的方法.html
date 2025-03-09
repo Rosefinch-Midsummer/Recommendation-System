@@ -1,0 +1,800 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>涨指标的方法 - 推荐系统</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">推荐系统</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="涨指标的方法"><a class="header" href="#涨指标的方法">涨指标的方法</a></h1>
+<ul>
+<li><a href="#%E6%A6%82%E8%BF%B0">概述</a>
+<ul>
+<li><a href="#%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87">推荐系统的评价指标</a></li>
+<li><a href="#%E6%B6%A8%E6%8C%87%E6%A0%87%E7%9A%84%E6%96%B9%E6%B3%95%E6%9C%89%E5%93%AA%E4%BA%9B">涨指标的方法有哪些？</a></li>
+</ul>
+</li>
+<li><a href="#%E5%8F%AC%E5%9B%9E">召回</a>
+<ul>
+<li><a href="#%E5%8F%AC%E5%9B%9E%E6%A8%A1%E5%9E%8B%E5%8F%AC%E5%9B%9E%E9%80%9A%E9%81%93">召回模型&amp;召回通道</a></li>
+<li><a href="#%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B">双塔模型</a></li>
+<li><a href="#item2item%E6%A8%A1%E5%9E%8B">Item2Item模型</a></li>
+<li><a href="#%E5%B0%8F%E4%BC%97%E7%9A%84%E5%8F%AC%E5%9B%9E%E6%A8%A1%E5%9E%8B">小众的召回模型</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93%E6%94%B9%E8%BF%9B%E5%8F%AC%E5%9B%9E%E6%A8%A1%E5%9E%8B">总结：改进召回模型</a></li>
+</ul>
+</li>
+<li><a href="#%E6%8E%92%E5%BA%8F%E6%A8%A1%E5%9E%8B">排序模型</a>
+<ul>
+<li><a href="#%E7%B2%BE%E6%8E%92%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%94%B9%E8%BF%9B">精排模型的改进</a>
+<ul>
+<li><a href="#%E7%B2%BE%E6%8E%92%E6%A8%A1%E5%9E%8B%E5%9F%BA%E5%BA%A7">精排模型：基座</a></li>
+<li><a href="#%E7%B2%BE%E6%8E%92%E6%A8%A1%E5%9E%8B%E5%A4%9A%E7%9B%AE%E6%A0%87%E9%A2%84%E4%BC%B0">精排模型：多目标预估</a></li>
+</ul>
+</li>
+<li><a href="#%E7%B2%97%E6%8E%92%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%94%B9%E8%BF%9B">粗排模型的改进</a>
+<ul>
+<li><a href="#%E7%B2%97%E6%8E%92%E6%A8%A1%E5%9E%8B">粗排模型</a></li>
+<li><a href="#%E7%B2%97%E7%B2%BE%E6%8E%92%E4%B8%80%E8%87%B4%E6%80%A7%E5%BB%BA%E6%A8%A1">粗精排一致性建模</a></li>
+</ul>
+</li>
+<li><a href="#%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E5%BA%8F%E5%88%97%E5%BB%BA%E6%A8%A1">用户行为序列建模</a>
+<ul>
+<li><a href="#%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E5%BA%8F%E5%88%97%E5%BB%BA%E6%A8%A1%E6%96%B9%E5%BC%8F">用户行为序列建模方式</a></li>
+<li><a href="#%E6%94%B9%E8%BF%9B">改进</a></li>
+</ul>
+</li>
+<li><a href="#%E5%9C%A8%E7%BA%BF%E5%AD%A6%E4%B9%A0">在线学习</a>
+<ul>
+<li><a href="#%E5%9C%A8%E7%BA%BF%E5%AD%A6%E4%B9%A0%E7%9A%84%E8%B5%84%E6%BA%90%E6%B6%88%E8%80%97">在线学习的资源消耗</a></li>
+</ul>
+</li>
+<li><a href="#%E8%80%81%E6%B1%A4%E6%A8%A1%E5%9E%8B">老汤模型</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93%E6%94%B9%E8%BF%9B%E6%8E%92%E5%BA%8F%E6%A8%A1%E5%9E%8B">总结：改进排序模型</a></li>
+</ul>
+</li>
+<li><a href="#%E5%A4%9A%E6%A0%B7%E6%80%A7">多样性</a>
+<ul>
+<li><a href="#%E7%B2%BE%E6%8E%92%E5%A4%9A%E6%A0%B7%E6%80%A7">精排多样性</a></li>
+<li><a href="#%E7%B2%97%E6%8E%92%E5%A4%9A%E6%A0%B7%E6%80%A7">粗排多样性</a></li>
+<li><a href="#%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B-1">双塔模型</a>
+<ul>
+<li><a href="#%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E6%B7%BB%E5%8A%A0%E5%99%AA%E5%A3%B0">双塔模型：添加噪声</a></li>
+<li><a href="#%E5%8F%8C%E5%A1%94%E6%A8%A1%E5%9E%8B%E6%8A%BD%E6%A0%B7%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E5%BA%8F%E5%88%97">双塔模型：抽样用户行为序列</a></li>
+</ul>
+</li>
+<li><a href="#u2i2i%E6%8A%BD%E6%A0%B7%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E5%BA%8F%E5%88%97">U2I2I：抽样用户行为序列</a></li>
+<li><a href="#%E6%8E%A2%E7%B4%A2%E6%B5%81%E9%87%8F">探索流量</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93%E6%8F%90%E5%8D%87%E5%A4%9A%E6%A0%B7%E6%80%A7">总结：提升多样性</a></li>
+</ul>
+</li>
+<li><a href="#%E7%89%B9%E6%AE%8A%E7%94%A8%E6%88%B7%E4%BA%BA%E7%BE%A4">特殊用户人群</a>
+<ul>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%89%B9%E6%AE%8A%E5%AF%B9%E5%BE%85%E7%89%B9%E6%AE%8A%E4%BA%BA%E7%BE%A4">为什么要特殊对待特殊人群？</a></li>
+<li><a href="#%E6%B6%A8%E6%8C%87%E6%A0%87%E7%9A%84%E6%96%B9%E6%B3%95">涨指标的方法</a></li>
+<li><a href="#%E7%89%B9%E6%AE%8A%E5%86%85%E5%AE%B9%E6%B1%A0">特殊内容池</a>
+<ul>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E7%89%B9%E6%AE%8A%E5%86%85%E5%AE%B9%E6%B1%A0">为什么需要特殊内容池？</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E6%9E%84%E9%80%A0%E7%89%B9%E6%AE%8A%E5%86%85%E5%AE%B9%E6%B1%A0">如何构造特殊内容池？</a></li>
+<li><a href="#%E7%89%B9%E6%AE%8A%E5%86%85%E5%AE%B9%E6%B1%A0%E7%9A%84%E5%8F%AC%E5%9B%9E">特殊内容池的召回</a></li>
+</ul>
+</li>
+<li><a href="#%E7%89%B9%E6%AE%8A%E7%9A%84%E6%8E%92%E5%BA%8F%E7%AD%96%E7%95%A5">特殊的排序策略</a>
+<ul>
+<li><a href="#%E6%8E%92%E9%99%A4%E4%BD%8E%E8%B4%A8%E9%87%8F%E7%89%A9%E5%93%81">排除低质量物品</a></li>
+<li><a href="#%E5%B7%AE%E5%BC%82%E5%8C%96%E7%9A%84%E8%9E%8D%E5%88%86%E5%85%AC%E5%BC%8F">差异化的融分公式</a></li>
+</ul>
+</li>
+<li><a href="#%E7%89%B9%E6%AE%8A%E7%9A%84%E6%8E%92%E5%BA%8F%E6%A8%A1%E5%9E%8B">特殊的排序模型</a>
+<ul>
+<li><a href="#%E5%B7%AE%E5%BC%82%E5%8C%96%E7%9A%84%E6%8E%92%E5%BA%8F%E6%A8%A1%E5%9E%8B">差异化的排序模型</a></li>
+</ul>
+</li>
+<li><a href="#%E9%94%99%E8%AF%AF%E7%9A%84%E5%81%9A%E6%B3%95">错误的做法</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93%E7%89%B9%E6%AE%8A%E5%AF%B9%E5%BE%85%E7%89%B9%E6%AE%8A%E7%94%A8%E6%88%B7%E4%BA%BA%E7%BE%A4">总结：特殊对待特殊用户人群</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%A4%E4%BA%92%E8%A1%8C%E4%B8%BA%E5%85%B3%E6%B3%A8%E8%BD%AC%E5%8F%91%E8%AF%84%E8%AE%BA">交互行为（关注、转发、评论）</a>
+<ul>
+<li><a href="#%E7%94%A8%E6%88%B7%E7%9A%84%E4%BA%A4%E4%BA%92%E8%A1%8C%E4%B8%BA">用户的交互行为</a></li>
+<li><a href="#%E5%85%B3%E6%B3%A8">关注</a>
+<ul>
+<li><a href="#%E5%85%B3%E6%B3%A8%E9%87%8F%E5%AF%B9%E7%95%99%E5%AD%98%E7%9A%84%E4%BB%B7%E5%80%BC">关注量对留存的价值</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E5%85%B3%E6%B3%A8%E5%85%B3%E7%B3%BB%E6%8F%90%E5%8D%87%E7%94%A8%E6%88%B7%E7%95%99%E5%AD%98">如何利用关注关系提升用户留存？</a></li>
+<li><a href="#%E7%B2%89%E4%B8%9D%E6%95%B0%E5%AF%B9%E4%BF%83%E5%8F%91%E5%B8%83%E7%9A%84%E4%BB%B7%E5%80%BC">粉丝数对促发布的价值</a></li>
+<li><a href="#%E9%9A%90%E5%BC%8F%E5%85%B3%E6%B3%A8%E5%85%B3%E7%B3%BB">隐式关注关系</a></li>
+</ul>
+</li>
+<li><a href="#%E8%BD%AC%E5%8F%91">转发</a>
+<ul>
+<li><a href="#%E4%BF%83%E8%BD%AC%E5%8F%91%E5%88%86%E4%BA%AB%E5%9B%9E%E6%B5%81">促转发（分享回流）</a></li>
+<li><a href="#kol%E5%BB%BA%E6%A8%A1">KOL建模</a></li>
+<li><a href="#%E4%BF%83%E8%BD%AC%E5%8F%91%E7%9A%84%E7%AD%96%E7%95%A5">促转发的策略</a></li>
+</ul>
+</li>
+<li><a href="#%E8%AF%84%E8%AE%BA">评论</a>
+<ul>
+<li><a href="#%E8%AF%84%E8%AE%BA%E4%BF%83%E5%8F%91%E5%B8%83">评论促发布</a></li>
+<li><a href="#%E8%AF%84%E8%AE%BA%E7%9A%84%E5%85%B6%E4%BB%96%E4%BB%B7%E5%80%BC">评论的其他价值</a></li>
+</ul>
+</li>
+<li><a href="#%E6%80%BB%E7%BB%93%E5%88%A9%E7%94%A8%E4%BA%A4%E4%BA%92%E8%A1%8C%E4%B8%BA">总结：利用交互行为</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="概述"><a class="header" href="#概述">概述</a></h1>
+<p>这节课和后面的几节课的内容是推荐系统涨指标的方法。这节课先回顾推荐系统的评价指标，尤其是LT7和LT30。后面的课程会分为5部分：</p>
+<ol>
+<li>改进召回模型和添加新的召回模型。</li>
+<li>改进粗排和精排模型。</li>
+<li>提升召回、粗排、精排中的多样性。</li>
+<li>特殊对待新用户、低活用户等特殊人群。</li>
+<li>利用关注、转发、评论这三种交互行为来提升指标。</li>
+</ol>
+<p>课件链接： https://github.com/wangshusen/RecommenderSystem</p>
+<p>参考文献： https://arxiv.org/abs/2308.01204</p>
+<h2 id="推荐系统的评价指标"><a class="header" href="#推荐系统的评价指标">推荐系统的评价指标</a></h2>
+<p>在推荐系统中，日活跃用户数（DAU）和用户留存率是最为关键的指标。目前，工业界普遍使用LT7（7天留存率）和LT30（30天留存率）来衡量用户留存情况。</p>
+<p>例如，如果某用户在今天（t0）登录APP，并且在接下来的7天（t0～t6）中有4天再次登录，那么该用户的LT7为4。显然，LT7的范围是1≤LT7≤7，而LT30的范围是1≤LT30≤30。</p>
+<p>LT的增长通常表明用户体验的提升，除非在LT增长的同时DAU下降。</p>
+<p>如果APP禁止低活跃用户登录，可能会导致DAU下降，但LT却可能增长。</p>
+<p>其他核心指标包括用户使用时长、总阅读量（即总点击数）和总曝光量。这些指标的重要性相对DAU和留存率较低。</p>
+<p>此外，使用时长的增加通常会伴随LT的增长，但在某些情况下，时长的增加可能导致阅读量和曝光量的下降。</p>
+<p>一些非核心指标如点击率和交互率等也可以提供辅助信息。</p>
+<p>对于用户生成内容（UGC）平台而言，发布量和发布渗透率同样是核心指标。</p>
+<h2 id="涨指标的方法有哪些"><a class="header" href="#涨指标的方法有哪些">涨指标的方法有哪些？</a></h2>
+<ol>
+<li>改进召回模型，添加新的召回模型</li>
+<li>改进粗排和精排模型</li>
+<li>提升召回、粗排、精排中的多样性</li>
+<li>特殊对待新用户、低活用户等特殊人群</li>
+<li>利用关注、转发、评论这三种交互行为</li>
+</ol>
+<h1 id="召回"><a class="header" href="#召回">召回</a></h1>
+<p>这节课的内容是推荐系统涨指标的方法。具体讲解如何通过改进召回模型（retrieval models）来提升推荐系统的核心指标。这节课的内容分三部分：双塔模型、Item-to-Item (I2I)、还有小众的召回模型（比如PDN、Deep Retrieval、SINE、M2GRL）。</p>
+<p>参考文献<br />
+[1] Li et al. Path-based Deep Network for Candidate Item Matching in Recommenders. In SIGIR, 2021.<br />
+[2] Gao et al. Learning an end-to-end structure for retrieval in large-scale recommendations. In CIKM, 2021.<br />
+[3] Tan et al. Sparse-interest network for sequential recommendation. In WSDM, 2021.<br />
+[4] Wang et al. M2GRL: A multitask multi-view graph representation learning framework for web-scale recommender systems. In KDD, 2020.</p>
+<p>课件链接： https://github.com/wangshusen/RecommenderSystem</p>
+<p>参考文献： https://arxiv.org/abs/2308.01204</p>
+<h2 id="召回模型召回通道"><a class="header" href="#召回模型召回通道">召回模型&amp;召回通道</a></h2>
+<p>推荐系统有几十条召回通道，它们的召回总量是固定的。</p>
+<p>召回总量越大，指标越好，粗排计算量越大。</p>
+<p>双塔模型（two-tower）和item-to-item（I2I）是最重要的两类召回模型，占据召回的大部分配额。</p>
+<p>有很多小众的模型，占据的配额很少。在召回总量不变的前提下，添加某些召回模型可以提升核心指标。</p>
+<p>有很多内容池，比如30天物品、1天物品、6小时物品、新用户优质内容池、分人群内容池。</p>
+<p>同一个模型可以用于多个内容池，得到多条召回通道。</p>
+<h2 id="双塔模型"><a class="header" href="#双塔模型">双塔模型</a></h2>
+<p>方向1：优化正样本、负样本。</p>
+<ul>
+<li>简单正样本：有点击的（用户，物品）二元组</li>
+<li>简单负样本：随机组合的（用户，物品）二元组</li>
+<li>困难负样本：排序靠后的（用户，物品）二元组</li>
+</ul>
+<p>方向2：改进神经网络结构</p>
+<ul>
+<li>Baseline：用户塔、物品塔分别是全连接网络，各输出一个向量分别作为用户、物品的表征。</li>
+<li>改进：用户塔、物品塔分别用DCN代替全连接网络</li>
+<li>改进：在用户塔中使用用户行为序列（last-n）</li>
+<li>改进：使用多向量模型代替单向量模型。（标准的双塔模型也叫单向量模型。）</li>
+</ul>
+<p>方向3：改进模型的训练方法</p>
+<ul>
+<li>Baseline：做二分类，让模型学会区分正样本和负样本</li>
+<li>改进：结合二分类、batch 内负采样。（对于 batch 内负采样，需要做纠偏。)</li>
+<li>改进：使用自监督学习方法；让冷门物品的embedding 学得更好。</li>
+</ul>
+<h2 id="item2item模型"><a class="header" href="#item2item模型">Item2Item模型</a></h2>
+<p>I2I是一大类模型，基于相似物品做召回。最常见的用法是U2I2I(user →item →item）。</p>
+<p>如何计算物品相似度？</p>
+<p>方法1：ItemCF 及其变体</p>
+<ul>
+<li>一些用户同时喜欢物品<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8095em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>和<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8095em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>则认为<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8095em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 和<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8095em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">i</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>相似。</li>
+<li>ItemCF、Online ItemCF、Swing 、Online Swing 都是基于相同的思想。</li>
+<li>线上同时使用上述4种I2I模型，各分配一定配额。</li>
+</ul>
+<p>方法2：基于物品向量表征，计算向量相似度。（双塔模型、图神经网络均可计算物品向量表征。)</p>
+<h2 id="小众的召回模型"><a class="header" href="#小众的召回模型">小众的召回模型</a></h2>
+<p>类似 I2I 的模型：</p>
+<ul>
+<li>U2U2I(user→user→item）：已知用户u1 与u2 相似且 u2 喜欢物品i，那么给用户 u 推荐物品i。</li>
+<li>U2A2I(user →author →item）：已知用户 u 喜欢作者 a  且a发布物品i，那么给用户u推荐物品i。</li>
+<li>U2A2A2I (user →author → author →item):已知用户 u 喜欢作者a1且a1 与a2 相似，a2 发布物品i，那么给用户u推荐物品i。</li>
+</ul>
+<p>更复杂的模型：</p>
+<ul>
+<li>Path-based Deep Network (PDN) [1]</li>
+<li>Deep Retrieval [2]</li>
+<li>Sparse-Interest Network (SINE) [3]</li>
+<li>Multi-task Multi-view Graph Representation Learning (M2GRL) [4]</li>
+</ul>
+<p>参考文献</p>
+<ol>
+<li>Li et al. Path-based Deep Network for Candidate Item Matching in Recommenders. In SIGlR, 2021.</li>
+<li>Gao et al. Learning an end-to-end structure for retrieval in large-scale recommendations. In ClKM,2021.</li>
+<li>Tan et al. Sparse-interest network for sequential recommendation. In WSDM, 2021.</li>
+<li>Wang et al. M2GRL: A multitask multi-view graph representation learning framework for web-scale recommender systems. In KDD, 2020.</li>
+</ol>
+<h2 id="总结改进召回模型"><a class="header" href="#总结改进召回模型">总结：改进召回模型</a></h2>
+<p>双塔模型：优化正负样本、改进神经网络结构、改进训练的方法。</p>
+<p>I2I 模型：同时使用 ItemCF及其变体、使用物品向量表征计算物品相似度。</p>
+<p>添加小众的召回模型，比如PDN、Deep Retrieval、SINE、M2GRL等模型。</p>
+<p>在召回总量不变的前提下，调整各召回通道的配额。（可以让各用户群体用不同的配额。）</p>
+<h1 id="排序模型"><a class="header" href="#排序模型">排序模型</a></h1>
+<p>这节课的内容是通过改进粗排和精排模型涨指标。这节课的内容分5部分：</p>
+<ol>
+<li>精排模型的改进</li>
+<li>粗排模型的改进</li>
+<li>用户行为序列建模</li>
+<li>在线学习</li>
+<li>老汤模型</li>
+</ol>
+<h2 id="精排模型的改进"><a class="header" href="#精排模型的改进">精排模型的改进</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250228102611.png" alt="" /></p>
+<h3 id="精排模型基座"><a class="header" href="#精排模型基座">精排模型：基座</a></h3>
+<p>基座的输入包括离散特征和连续特征，输出一个向量，作为多目标预估的输入。</p>
+<p>改进1：基座加宽加深，计算量更大，预测更准确。</p>
+<p>改进2：做自动的特征交叉，比如bilinear[1]和LHUC[2]</p>
+<p>改进3：特征工程，比如添加统计特征、多模态内容特征。</p>
+<p>参考文献</p>
+<ol>
+<li>Huang et al. FiBiNET: combining feature importance and bilinear feature interaction for click-through rate prediction. In RecSys, 2019.</li>
+<li>Swietojanski et al. Learning hidden unit contributions for unsupervised acoustic model adaptation. In WSDM, 2016.</li>
+</ol>
+<h3 id="精排模型多目标预估"><a class="header" href="#精排模型多目标预估">精排模型：多目标预估</a></h3>
+<p>基于基座输出的向量，同时预估点击率等多个目标。</p>
+<p>改进1：增加新的预估目标，并把预估结果加入融合公式。</p>
+<ul>
+<li>最标准的目标包括点击率、点赞率、收藏率、转发率、评论率、关注率、完播率······</li>
+<li>寻找更多目标，比如进入评论区、给他人写的评论点赞·······</li>
+<li>把新的预估目标加入融合公式</li>
+</ul>
+<p>改进2：MMoE[1]、PLE[2] 等结构可能有效但往往无效。</p>
+<p>改进3：纠正position bias[3]可能有效，也可能无效。</p>
+<p>参考文献</p>
+<ol>
+<li>Ma et al. Modeling task relationships in multi-task learning with multi-gate mixture-of-experts. In KDD, 2018.</li>
+<li>Tang et al. Progressive layered extraction (PLE): A novel multi-task learning (MTL) model for personalized recommendations. In RecSys, 2020.</li>
+<li>Zhou et al. Recommending what video to watch next: a multitask ranking system. In RecSys, 2019.</li>
+</ol>
+<h2 id="粗排模型的改进"><a class="header" href="#粗排模型的改进">粗排模型的改进</a></h2>
+<h3 id="粗排模型"><a class="header" href="#粗排模型">粗排模型</a></h3>
+<p>粗排的打分量比精排大10倍，因此粗排模型必须够快。</p>
+<p>简单模型：多向量双塔模型，同时预估点击率等多个目标。</p>
+<p>复杂模型：三塔模型[1]效果好，但工程实现难度较大。</p>
+<p>参考文献</p>
+<ol>
+<li>Wang et al. COLD: towards the next generation of pre-ranking system. arXiv, 2020.</li>
+</ol>
+<h3 id="粗精排一致性建模"><a class="header" href="#粗精排一致性建模">粗精排一致性建模</a></h3>
+<p>蒸馏精排训练粗排，让粗排与精排更一致。</p>
+<p>优点：粗精排一致性建模可以提升核心指标。</p>
+<p>缺点：如果精排出bug，精排预估值p有偏，会污染粗排训练数据。</p>
+<p>方法1：pointwise 蒸馏。</p>
+<p>设y是用户真实行为，设p是精排的预估。用<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1994em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8544em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.4461em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight">p</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>作为粗排拟合的目标。例：对于点击率目标，用户有点击（y= 1），精排预估p=0.6。用<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1994em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8544em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.4461em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight">p</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.8</span></span></span></span>作为粗排拟合的点击率目标。</p>
+<p>方法2：pairwise 或listwise 蒸馏。</p>
+<p>给定k个候选物品，按照精排预估做排序。做learning to rank(LTR），让粗排拟合物品的序（而非值）。</p>
+<p>例：对于物品i和j，精排预估点击率为<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>。</p>
+<p>LTR 鼓励粗排预估点击率满足<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>否则有惩罚。</p>
+<p>LTR 通常使用 pairwise logistic loss。</p>
+<h2 id="用户行为序列建模"><a class="header" href="#用户行为序列建模">用户行为序列建模</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250228104138.png" alt="" /></p>
+<h3 id="用户行为序列建模方式"><a class="header" href="#用户行为序列建模方式">用户行为序列建模方式</a></h3>
+<p>最简单的方法是对物品向量取平均，作为一种用户特征[1]。</p>
+<p>DIN[2]使用注意力机制，对物品向量做加权平均。</p>
+<p>工业界目前沿着SIM[3]的方向发展。先用类目等属性筛选物品，然后用DIN对物品向量做加权平均。</p>
+<p>参考文献</p>
+<ol>
+<li>Covington, Adams, and Sargin. Deep neural networks for YouTube recommendations. In RecSys, 2016.</li>
+<li>Zhou et al. Deep interest network for click-through rate prediction. In KDD, 2018.</li>
+<li>Qi et al. Search-based User Interest Modeling with Lifelong Sequential Behavior Data for Click-Through Rate Prediction. In CIKM, 2020.</li>
+</ol>
+<h3 id="改进"><a class="header" href="#改进">改进</a></h3>
+<p>改进1：增加序列长度，让预测更准确，但是会增加计算成本和推理时间。</p>
+<p>改进2：筛选的方法，比如用类目、物品向量表征聚类。</p>
+<ul>
+<li>离线用多模态神经网络提取物品内容特征，将物品表征为向量。</li>
+<li>离线将物品向量聚为1000类，每个物品有一个聚类序号。</li>
+<li>线上排序时，用户行为序列中有n=1,000,000个物品。某候选物品的聚类序号是70，对n个物品做筛选，只保留聚类序号为70的物品。n个物品中只有数千个被保留下来。</li>
+<li>同时有好几种筛选方法，取筛选结果的并集。</li>
+</ul>
+<p>改进3：对用户行为序列中的物品，使用ID以外的一些特征</p>
+<p>概括：沿着SIM的方向发展，让原始的序列尽量长，然后做筛选降低序列长度，最后将筛选结果输入DIN。</p>
+<h2 id="在线学习"><a class="header" href="#在线学习">在线学习</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250228104814.png" alt="全量更新和在线更新" /></p>
+<h3 id="在线学习的资源消耗"><a class="header" href="#在线学习的资源消耗">在线学习的资源消耗</a></h3>
+<p>既需要在凌晨做全量更新，也需要全天不间断做增量更新。</p>
+<p>设在线学习需要 10,000 CPU core 的算力增量更新一个精排模型。推荐系统一共需要多少额外的算力给在线学习？</p>
+<p>为了做AB测试，线上同时运行多个不同的模型。如果线上有m个模型，则需要m套在线学习的机器。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250228105040.png" alt="" /></p>
+<p>线上有 m个模型，其中1个是holdout，1个是推全的模型，m-2个测试的新模型。</p>
+<p>每套在线学习的机器成本都很大，因此m数量很小，制约模型开发迭代的效率。</p>
+<p>在线学习对指标的提升巨大，但是会制约模型开发迭代的效率。</p>
+<h2 id="老汤模型"><a class="header" href="#老汤模型">老汤模型</a></h2>
+<p>用每天新产生的数据对模型做 1 epoch 的训练。久而久之，老模型训练得非常好，很难被超过。对模型做改进，重新训练，很难追上老模型。</p>
+<p>两大问题：</p>
+<p>问题1：如何快速判断新模型结构是否优于老模型？（不需要追上线上的老模型，只需要判断新老模型谁的结构更优。）</p>
+<p>问题2：如何更快追平、超过线上的老模型？（只有几十天的数据，新模型就能追上训练上百天的老模型。)</p>
+<p>问题1：如何快速判断新模型结构是否优于老模型？</p>
+<ul>
+<li>对于新老模型结构，都随机初始化模型全连接层。</li>
+<li>Embedding层可以是随机初始化，也可以是复用老模型训练好的参数。</li>
+<li>用n天的数据训练新老模型。（从旧到新，训练 1 epoch）。</li>
+<li>如果新模型显著优于老模型，新模型很可能更优。</li>
+<li>只是比较新老模型结构谁更好，而非真正追平老模型。</li>
+</ul>
+<p>问题2：如何更快追平线上的老模型？</p>
+<p>已经得出初步结论，认为新模型很可能优于老模型。用几十天的数据训练新模型，早日追平老模型。</p>
+<ul>
+<li>方法1：尽可能多地复用老模型训练好的embedding 层，避免随机初始化 embedding 层。（Embedding 层是对用户、物品特点的“记忆”，比全连接层学得慢。）</li>
+<li>方法2：把老模型作为 teacher 蒸馏新模型。（用户真实行为为y，老模型的预测是p，用<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1994em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8544em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.4461em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight">p</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>作为训练新模型的目标。</li>
+</ul>
+<h2 id="总结改进排序模型"><a class="header" href="#总结改进排序模型">总结：改进排序模型</a></h2>
+<p>精排模型：改进模型基座（加宽加深、特征交叉、特征工程），改进多目标预估（增加新目标、MMoE、position bias）。</p>
+<p>粗排模型：三塔模型（取代多向量双塔模型），粗精排一致性建模。</p>
+<p>用户行为序列建模：沿着SIM的方向迭代升级，加长序列长度，改进筛选物品的方法。</p>
+<p>在线学习：对指标提升大，但是会降低模型迭代升级效率。</p>
+<p>老汤模型制约模型迭代升级效率，需要特殊技巧。</p>
+<h1 id="多样性"><a class="header" href="#多样性">多样性</a></h1>
+<p>这节课的内容是通过提升推荐物品的多样性为推荐系统涨指标。在召回、粗排、精排三个阶段，均有提升多样性的方法。在召回阶段，可以通过添加噪声、随机选取用户行为序列等方式提升双塔模型、I2I的多样性。在排序阶段，结合兴趣分数与多样性分数共同给候选物品排序。</p>
+<h2 id="精排多样性"><a class="header" href="#精排多样性">精排多样性</a></h2>
+<p>精排阶段，结合兴趣分数和多样性分数对物品<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span>排序。</p>
+<ul>
+<li><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：兴趣分数，即融合点击率等多个预估目标。</li>
+<li><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：多样性分数，即物品<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span>与已经选中的物品的差异。</li>
+<li>用 <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>对物品做排序。</li>
+</ul>
+<p>常用MMR、DPP等方法计算多样性分数，精排使用滑动窗口，粗排不使用滑动窗口。</p>
+<ul>
+<li>精排决定最终的曝光，曝光页面上邻近的物品相似度应该小。所以计算精排多样性要使用滑动窗口。</li>
+<li>粗排要考虑整体的多样性，而非一个滑动窗口中的多样性。</li>
+</ul>
+<p>除了多样性分数，精排还使用打散策略增加多样性。</p>
+<ul>
+<li>类目：当前选中物品<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span>，之后5个位置不允许跟<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span>的二级类目相同。</li>
+<li>多模态：事先计算物品多模态内容向量表征，将全库物品聚为1000类；在精排阶段，如果当前选中物品<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span>，之后10个位置不允许跟i同属一个聚类。</li>
+</ul>
+<h2 id="粗排多样性"><a class="header" href="#粗排多样性">粗排多样性</a></h2>
+<p>粗排给5000个物品打分，选出500个物品送入精排。</p>
+<p>提升粗排和精排多样性都可以提升推荐系统核心指标。</p>
+<p>根据<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>对5000个物品排序，分数最高的200个物品送入精排。</p>
+<p>对于剩余的4800个物品，对每个物品i计算兴趣分数<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>和多样性分数<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。</p>
+<p>根据<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>对剩余4800个物品排序，分数最高的300个物品送入精排。</p>
+<h2 id="双塔模型-1"><a class="header" href="#双塔模型-1">双塔模型</a></h2>
+<h3 id="双塔模型添加噪声"><a class="header" href="#双塔模型添加噪声">双塔模型：添加噪声</a></h3>
+<p>用户塔将用户特征作为输入，输出用户的向量表征；然后做ANN检索，召回向量相似度高的物品。</p>
+<p>线上做召回时（在计算出用户向量之后，在做ANN检索之前）往用户向量中添加随机噪声。</p>
+<p>用户的兴趣越窄（比如用户最近交互的n个物品只覆盖少数几个类目），则添加的噪声越强。</p>
+<p>添加噪声使得召回的物品更多样，可以提升推荐系统核心指标</p>
+<h3 id="双塔模型抽样用户行为序列"><a class="header" href="#双塔模型抽样用户行为序列">双塔模型：抽样用户行为序列</a></h3>
+<p>用户最近交互的n个物品（用户行为序列）是用户塔的输入。保留最近的r个物品（<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span>）。从剩余的<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span></span></span></span>个物品中随机抽样<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6151em;"></span><span class="mord mathnormal">t</span></span></span></span>个物品（<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6542em;vertical-align:-0.0391em;"></span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">&lt;&lt;</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span>）。（可以是均匀抽样，也可以用非均匀抽样让类目平衡。）将得到的<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6151em;"></span><span class="mord mathnormal">t</span></span></span></span>个物品作为用户行为序列，而不是用全部<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span>个物品。</p>
+<p>抽样用户行为序列为什么能涨指标？</p>
+<p>一方面，注入随机性，召回结果更多样化。另一方面，<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span>可以非常大，可以利用到用户很久之前的兴趣。</p>
+<h2 id="u2i2i抽样用户行为序列"><a class="header" href="#u2i2i抽样用户行为序列">U2I2I：抽样用户行为序列</a></h2>
+<p>U2I2I（user—&gt;item一&gt;item）中的第一个item 是指用户最近交互的n个物品之一，在U2I2I中叫作种子物品。</p>
+<p>n个物品覆盖的类目数较少，且类目不平衡。</p>
+<ul>
+<li>系统共有 200个类目，某用户的n个物品只覆盖15个类目。</li>
+<li>足球类目的物品有 0.4n个，电视剧类目的物品有 0.2n个；其余类目的物品数均少于 0.05n个。</li>
+</ul>
+<p>做非均匀随机抽样，从n个物品中选出t个，让类目平衡。(想法和效果与双塔中的用户行为序列抽样相似。)</p>
+<p>用抽样得到的t个物品（代替原本的n个物品）作为U2I2I 的种子物品。一方面，类目更平衡，多样性更好。另一方面，n可以更大，覆盖的类目更多。</p>
+<h2 id="探索流量"><a class="header" href="#探索流量">探索流量</a></h2>
+<p>每个用户曝光的物品中有2%是非个性化的，用作兴趣探索。</p>
+<p>维护一个精选内容池，其中物品均为交互率指标高的优质物品。（内容池可以分人群，比如30~40岁男性内容池。）</p>
+<p>从精选内容池中随机抽样几个物品，跳过排序，直接插入最终排序结果。</p>
+<p>兴趣探索在短期内对核心指标产生负向影响，但长期来看会产生正向影响。</p>
+<h2 id="总结提升多样性"><a class="header" href="#总结提升多样性">总结：提升多样性</a></h2>
+<p>精排：结合兴趣分数和多样性分数做排序；做规则打散。</p>
+<p>粗排：只用兴趣分数选出部分物品；结合兴趣分数和多样性分数选出部分物品。</p>
+<p>召回：往双塔模型的用户向量添加噪声；对用户行为序列做非均匀随机抽样（对双塔和U2I2I都适用）。</p>
+<p>兴趣探索：保留少部分的流量给非个性化推荐。</p>
+<h1 id="特殊用户人群"><a class="header" href="#特殊用户人群">特殊用户人群</a></h1>
+<p>这节课的内容是特殊对待特殊的用户人群，比如新用户和低活用户。具体介绍3大类方法：</p>
+<ol>
+<li>构造特殊内容池，用于特殊用户人群的召回。</li>
+<li>使用特殊排序策略，保护特殊用户。</li>
+<li>使用特殊的排序模型，消除模型预估的偏差。</li>
+</ol>
+<h2 id="为什么要特殊对待特殊人群"><a class="header" href="#为什么要特殊对待特殊人群">为什么要特殊对待特殊人群？</a></h2>
+<ol>
+<li>新用户、低活用户的行为很少，个性化推荐不准确。</li>
+<li>新用户、低活用户容易流失，要想办法促使他们留存。</li>
+<li>特殊用户的行为（比如点击率、交互率）不同于主流用户，基于全体用户行为训练出的模型在特殊用户人群上有偏。</li>
+</ol>
+<h2 id="涨指标的方法-1"><a class="header" href="#涨指标的方法-1">涨指标的方法</a></h2>
+<ol>
+<li>构造特殊内容池，用于特殊用户人群的召回。</li>
+<li>使用特殊排序策略，保护特殊用户。</li>
+<li>使用特殊的排序模型，消除模型预估的偏差。</li>
+</ol>
+<h2 id="特殊内容池"><a class="header" href="#特殊内容池">特殊内容池</a></h2>
+<h3 id="为什么需要特殊内容池"><a class="header" href="#为什么需要特殊内容池">为什么需要特殊内容池？</a></h3>
+<ul>
+<li>新用户、低活用户的行为很少，个性化召回不准确。（既然个性化不好，那么就保证内容质量好。）</li>
+<li>针对特定人群的特点构造特殊内容池，提升用户满意度。（例如，对于喜欢留评论的中年女性，构造促评论内容池，满足这些用户的互动需求。）</li>
+</ul>
+<h3 id="如何构造特殊内容池"><a class="header" href="#如何构造特殊内容池">如何构造特殊内容池？</a></h3>
+<p>方法1：根据物品获得的交互次数、交互率选择优质物品。</p>
+<ul>
+<li>圈定人群：只考虑特定人群，例如18~25岁一二线城市男性。</li>
+<li>构造内容池：用该人群对物品的交互次数、交互率给物品打分，选出分数最高的物品进入内容池。</li>
+<li>内容池有弱个性化的效果。</li>
+<li>内容池定期更新，加入新物品，排除交互率低和失去时效性的老物品。</li>
+<li>该内容池只对该人群生效。</li>
+</ul>
+<p>方法2：做因果推断，判断物品对人群留存率的贡献，根据贡献值选物品。</p>
+<p>这种技术还不成熟。</p>
+<h3 id="特殊内容池的召回"><a class="header" href="#特殊内容池的召回">特殊内容池的召回</a></h3>
+<p>通常使用双塔模型从特殊内容池中做召回。</p>
+<ul>
+<li>双塔模型是个性化的。</li>
+<li>对于新用户，双塔模型的个性化做不准。</li>
+<li>靠高质量内容、弱个性化做弥补。</li>
+</ul>
+<p>额外的训练代价？</p>
+<ul>
+<li>对于正常用户，不论有多少内容池，只训练一个双塔模型。</li>
+<li>对于新用户，由于历史交互记录很少，需要单独训练模型。</li>
+</ul>
+<p>额外的推理代价？</p>
+<ul>
+<li>内容池定期更新，然后要更新 ANN 索引。</li>
+<li>线上做召回时，需要做 ANN 检索。</li>
+<li>特殊内容池都很小（比全量内容池小10~100倍），所以需要的额外算力不大。</li>
+</ul>
+<h2 id="特殊的排序策略"><a class="header" href="#特殊的排序策略">特殊的排序策略</a></h2>
+<h3 id="排除低质量物品"><a class="header" href="#排除低质量物品">排除低质量物品</a></h3>
+<p>对于新用户、低活用户这样的特殊人群，业务上只关注留存，不在乎消费（总曝光量、广告收入、电商收入）。</p>
+<p>对于新用户、低活用户，少出广告、甚至不出广告。</p>
+<p>新发布的物品不在新用户、低活用户上做探索。</p>
+<ul>
+<li>物品新发布时，推荐做得不准，会损害用户体验。</li>
+<li>只在活跃的老用户上做探索，对新物品提权（boost）。</li>
+<li>不在新用户、低活用户上做探索，避免伤害用户体验。</li>
+</ul>
+<h3 id="差异化的融分公式"><a class="header" href="#差异化的融分公式">差异化的融分公式</a></h3>
+<p>新用户、低活用户的点击和交互行为不同于正常用户。</p>
+<p>低活用户的人均点击量很小；没有点击就不会有进一步的交互。</p>
+<p>低活用户的融分公式中，提高预估点击率的权重（相较于普通用户）。</p>
+<p>保留几个曝光坑位给预估点击率最高的几个物品。</p>
+<ul>
+<li>例：精排从500个物品中选50个作为推荐结果，其中3个坑位给点击率最高的物品，剩余47个坑位由融分公式决定。</li>
+<li>甚至可以把点击率最高的物品排在第一，确保用户一定能看到。</li>
+</ul>
+<h2 id="特殊的排序模型"><a class="header" href="#特殊的排序模型">特殊的排序模型</a></h2>
+<h3 id="差异化的排序模型"><a class="header" href="#差异化的排序模型">差异化的排序模型</a></h3>
+<p>特殊用户人群的行为不同于普通用户。新用户、低活用户的点击率和交互率偏高或偏低。</p>
+<p>排序模型被主流用户主导，对特殊用户做不准预估。</p>
+<ul>
+<li>用全体用户数据训练出的模型，给新用户做的预估有严重偏差。</li>
+<li>如果一个APP的用户90%是女性，用全体用户数据训练出的模型对男性用户做的预估有偏差。</li>
+</ul>
+<p>问题：对于特殊用户，如何让排序模型预估做得准？</p>
+<p>方法1：大模型+小模型</p>
+<ul>
+<li>用全体用户行为训练大模型，大模型的预估p拟合用户行为y。</li>
+<li>·用特殊用户的行为训练小模型，小模型的预估q拟合大模型的残差y-p。</li>
+<li>对主流用户只用大模型做预估p。</li>
+<li>对特殊用户，结合大模型和小模型的预估p+q。</li>
+</ul>
+<p>方法2：融合多个experts，类似MMoE。</p>
+<ul>
+<li>只用一个模型，模型有多个experts，各输出一个向量。</li>
+<li>对 experts 的输出做加权平均。</li>
+<li>根据用户特征计算权重。</li>
+<li>以新用户为例，模型将用户的新老、活跃度等特征作为输入，输出权重，用于对 experts 做加权平均。</li>
+</ul>
+<p>方法3：大模型预估之后，用小模型做校准。</p>
+<ul>
+<li>用大模型预估点击率、交互率。</li>
+<li>将用户特征丶大模型预估点击率和交互率作为小模型（例如GBDT）的输入。</li>
+<li>在特殊用户人群的数据上训练小模型，小模型的输出拟合用户真实行为。</li>
+</ul>
+<h2 id="错误的做法"><a class="header" href="#错误的做法">错误的做法</a></h2>
+<p>每个用户人群使用一个排序模型，推荐系统同时维护多个大模型。</p>
+<ul>
+<li>系统有一个主模型；每个用户人群有自己的一个模型。</li>
+<li>每天凌晨，用全体用户数据更新主模型。</li>
+<li>基于训练好的主模型，在某特殊用户人群的数据上再训练 1 epoch，作为该用户人群的模型。</li>
+</ul>
+<p>特点：短期可以提升指标；维护代价大，长期有害。</p>
+<p>例如：起初，低活男性用户模型比主模型的AUC 高0.2%。主模型迭代几个版本后，AUC累计提升0.5%°·特殊人群模型太多，长期没有人维护和更新。如果把低活男性用户模型下线，换成主模型，在低活男性用户 上的 AUC 反倒提升 0.3% ！</p>
+<p>赢两次不可取！因为只是浪费了算力，对模型没有改变。</p>
+<h2 id="总结特殊对待特殊用户人群"><a class="header" href="#总结特殊对待特殊用户人群">总结：特殊对待特殊用户人群</a></h2>
+<ul>
+<li>召回：针对特殊用户人群，构造特殊的内容池，增加相应的召回通道。</li>
+<li>排序策略：排除低质量物品，保护新用户和低活用户；特殊用户人群使用特殊的融分公式。</li>
+<li>排序模型：结合大模型和小模型，小模型拟合大模型的残差；只用一个模型，模型有多个experts；大模型预估之后，用小模型做校准。</li>
+</ul>
+<h1 id="交互行为关注转发评论"><a class="header" href="#交互行为关注转发评论">交互行为（关注、转发、评论）</a></h1>
+<p>这节课的内容是利用关注、转发、评论这三种交互行为给推荐系统涨指标。</p>
+<h2 id="用户的交互行为"><a class="header" href="#用户的交互行为">用户的交互行为</a></h2>
+<p>交互行为：点赞、收藏、转发、关注、评论·····</p>
+<p>推荐系统如何利用交互行为？</p>
+<p>最简单的方法：将模型预估的交互率用于排序。</p>
+<ul>
+<li>模型将交互行为当做预估的目标。</li>
+<li>将预估的点击率、交互率做融合，作为排序的依据。</li>
+</ul>
+<p>交互行为有没有其他用途？</p>
+<h2 id="关注"><a class="header" href="#关注">关注</a></h2>
+<h3 id="关注量对留存的价值"><a class="header" href="#关注量对留存的价值">关注量对留存的价值</a></h3>
+<p>一位用户关注的作者越多，则平台对他的吸引力越强。</p>
+<p>用户留存率（r）与他关注的作者数量（f）正相关。</p>
+<p>如果某用户的f较小，则推荐系统要促使该用户关注更多作者。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rosefinch-Midsummer/MyImagesHost04/img20250301101156.png" alt="" /></p>
+<h3 id="如何利用关注关系提升用户留存"><a class="header" href="#如何利用关注关系提升用户留存">如何利用关注关系提升用户留存？</a></h3>
+<p>方法1：用排序策略提升关注量。</p>
+<ul>
+<li>对于用户u，模型预估候选物品i的关注率为<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。</li>
+<li>设用户u已经关注了f个作者。</li>
+<li>我们定义单调递减函数<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose">)</span></span></span></span>，用户已经关注的作者越多，则 <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose">)</span></span></span></span> 越小。</li>
+<li>在排序融分公式中添加<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>用于促关注。（如果 f 小且<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>大则<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>给物品<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span>带来很大加分。）</li>
+</ul>
+<p>方法2：构造促关注内容池和召回通道。</p>
+<ul>
+<li>这个内容池中物品的关注率高，可以促关注。</li>
+<li>如果用户关注的作者数f较小，则对该用户使用该内容池。</li>
+<li>召回配额可以固定，也可以与f负相关。</li>
+</ul>
+<h3 id="粉丝数对促发布的价值"><a class="header" href="#粉丝数对促发布的价值">粉丝数对促发布的价值</a></h3>
+<p>UGC平台将作者发布量、发布率作为核心指标，希望作者多发布。</p>
+<p>作者发布的物品被平台推送给用户，会产生点赞、评论、关注等交互。</p>
+<p>交互（尤其是关注、评论）可以提升作者发布积极性。</p>
+<p>作者的粉丝数越少，则每增加一个粉丝对发布积极性的提升越大。</p>
+<p>用排序策略帮助低粉新作者涨粉。</p>
+<p>某作者a的粉丝数（被关注数）为<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1076em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。作者a发布的物品i可能被推荐给用户u，模型预估关注率为<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。我们定义单调递减函数<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1076em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>作为权重；作者a的粉丝越多，则<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1076em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>越小。
+在排序融分公式中添加<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1076em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>帮助低粉作者涨粉。</p>
+<h3 id="隐式关注关系"><a class="header" href="#隐式关注关系">隐式关注关系</a></h3>
+<p>召回通道 U2A2I ：user → author →item。</p>
+<p>显式关注关系：用户u关注了作者a，将a发布的物品推荐给u。（点击率、交互率指标通常高于其他召回通道。)</p>
+<p>隐式关注关系：用户u喜欢看作者a发布的物品，但是u 没有关注a。</p>
+<p>隐式关注的作者数量远大于显式关注。挖掘隐式关注关系，构造U2A2I召回通道，可以提升推荐系统核心指标。</p>
+<h2 id="转发"><a class="header" href="#转发">转发</a></h2>
+<h3 id="促转发分享回流"><a class="header" href="#促转发分享回流">促转发（分享回流）</a></h3>
+<p>A平台用户将物品转发到B平台，可以为A吸引站外流量。</p>
+<p>推荐系统做促转发（也叫分享回流）可以提升DAU和消费指标。</p>
+<p>简单提升转发次数是否有效呢？</p>
+<ul>
+<li>模型预估转发率为<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span></span></span></span>，融分公式中有一项<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4445em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span></span></span></span>，让转发率大的物品更容易获得曝光机会。</li>
+<li>增大权重<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span></span></span></span>可以促转发，吸引站外流量，但是会对点击率和其他交互率产生负面影响。</li>
+</ul>
+<h3 id="kol建模"><a class="header" href="#kol建模">KOL建模</a></h3>
+<p>目标：在不损害点击和其他交互的前提下，尽量多吸引站外流量。</p>
+<p>什么样的用户的转发可以吸引大量站外流量？其他平台的Key Opinion Leader (KOL)！</p>
+<ul>
+<li>答案：其他平台的 Key Opinion Leader（KOL）。</li>
+<li>用户u是我们站内的KOL，但他不是其他平台的KOL，他的转发价值大吗？不大</li>
+<li>用户在我们站内没有粉丝，但他是其他平台的KOL，他的转发价值大吗？大</li>
+</ul>
+<p>如何判断本平台的用户是不是其他平台的KOL？该用户历史上的转发能带来多少站外流量。</p>
+<h3 id="促转发的策略"><a class="header" href="#促转发的策略">促转发的策略</a></h3>
+<p>目标：在不损害点击和其他交互的前提下，尽量多吸引站外流量。</p>
+<p>识别出的站外KOL之后，该如何用于排序和召回？</p>
+<p>方法1：排序融分公式中添加额外的一项<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0315em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">u</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。</p>
+<ul>
+<li><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0315em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">u</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：如果用户u是站外KOL，则<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0315em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">u</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>大。</li>
+<li><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：为用户u推荐物品i，模型预估的转发率。</li>
+<li>如果u是站外KOL，则多给他曝光他可能转发的物品。</li>
+</ul>
+<p>方法2：构造促转发内容池和召回通道，对站外KOL生效。</p>
+<h2 id="评论"><a class="header" href="#评论">评论</a></h2>
+<h3 id="评论促发布"><a class="header" href="#评论促发布">评论促发布</a></h3>
+<p>UGC平台将作者发布量、发布率作为核心指标，希望作者多发布。</p>
+<p>关注、评论等交互可以提升作者发布积极性。</p>
+<p>如果新发布物品尚未获得很多评论，则给预估评论率提权，让物品尽快获得评论。</p>
+<p>排序融分公式中添加额外一项<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5945em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。</p>
+<ul>
+<li><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：权重，与物品<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span>已有的评论数量负相关。</li>
+<li><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：为用户推荐物品<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">i</span></span></span></span>，模型预估的评论率。</li>
+</ul>
+<h3 id="评论的其他价值"><a class="header" href="#评论的其他价值">评论的其他价值</a></h3>
+<p>有的用户喜欢留评论，喜欢跟作者、评论区用户互动。</p>
+<ul>
+<li>给这样的用户添加促评论的内容池，让他们更多机会参与讨论。</li>
+<li>有利于提升这些用户的留存。</li>
+</ul>
+<p>有的用户常留高质量评论（评论的点赞量高）。</p>
+<ul>
+<li>高质量评论对作者、其他用户的留存有贡献。（作者、其他用户觉得这样的评论有趣或有帮助。）</li>
+<li>用排序和召回策略鼓励这些用户多留评论。</li>
+</ul>
+<h2 id="总结利用交互行为"><a class="header" href="#总结利用交互行为">总结：利用交互行为</a></h2>
+<p>关注：留存价值（让新用户关注更多作者，提升新用户留存）；发布价值（帮助新作者获得更多粉丝，提升作者发布积极性）；利用隐式关注关系做召回。</p>
+<p>转发：判断哪些用户是站外的KOL，利用他们转发的价值，吸引站外的流量。</p>
+<p>评论：发布价值（促使新物品获得评论，提升作者发布积极性）；留存价值（给喜欢讨论的用户创造更多留评机会）；鼓励高质量评论的用户多留评论。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../工业界真实的信息流推荐系统/物品冷启动.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../工业界真实的信息流推荐系统/物品冷启动.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
